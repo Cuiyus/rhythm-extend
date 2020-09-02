@@ -1,0 +1,306 @@
+<!DOCTYPE html><html>
+      <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/><link rel="stylesheet" href="/proxy/application_1597198515610_0069/static/bootstrap.min.css" type="text/css"/><link rel="stylesheet" href="/proxy/application_1597198515610_0069/static/vis.min.css" type="text/css"/><link rel="stylesheet" href="/proxy/application_1597198515610_0069/static/webui.css" type="text/css"/><link rel="stylesheet" href="/proxy/application_1597198515610_0069/static/timeline-view.css" type="text/css"/><script src="/proxy/application_1597198515610_0069/static/sorttable.js"></script><script src="/proxy/application_1597198515610_0069/static/jquery-1.12.4.min.js"></script><script src="/proxy/application_1597198515610_0069/static/vis.min.js"></script><script src="/proxy/application_1597198515610_0069/static/bootstrap-tooltip.js"></script><script src="/proxy/application_1597198515610_0069/static/initialize-tooltips.js"></script><script src="/proxy/application_1597198515610_0069/static/table.js"></script><script src="/proxy/application_1597198515610_0069/static/additional-metrics.js"></script><script src="/proxy/application_1597198515610_0069/static/timeline-view.js"></script><script src="/proxy/application_1597198515610_0069/static/log-view.js"></script><script src="/proxy/application_1597198515610_0069/static/webui.js"></script><script>setUIRoot('/proxy/application_1597198515610_0069')</script>
+
+
+        <link rel="shortcut icon" href="/proxy/application_1597198515610_0069/static/spark-logo-77x50px-hd.png"></link>
+        <title>Spark KMeans Example - Spark Jobs</title>
+      </head>
+      <body>
+        <div class="navbar navbar-static-top">
+          <div class="navbar-inner">
+            <div class="brand">
+              <a href="/proxy/application_1597198515610_0069/" class="brand">
+                <img src="/proxy/application_1597198515610_0069/static/spark-logo-77x50px-hd.png"/>
+                <span class="version">2.4.4</span>
+              </a>
+            </div>
+            <p class="navbar-text pull-right">
+              <strong title="Spark KMeans Example">Spark KMeans Example</strong> application UI
+            </p>
+            <ul class="nav"><li class="active">
+        <a href="/proxy/application_1597198515610_0069/jobs/">Jobs</a>
+      </li><li class="">
+        <a href="/proxy/application_1597198515610_0069/stages/">Stages</a>
+      </li><li class="">
+        <a href="/proxy/application_1597198515610_0069/storage/">Storage</a>
+      </li><li class="">
+        <a href="/proxy/application_1597198515610_0069/environment/">Environment</a>
+      </li><li class="">
+        <a href="/proxy/application_1597198515610_0069/executors/">Executors</a>
+      </li></ul>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="row-fluid">
+            <div class="span12">
+              <h3 style="vertical-align: bottom; display: inline-block;">
+                Spark Jobs
+                <sup>
+      (<a data-toggle="tooltip" data-placement="bottom" title="A job is triggered by an action, like count() or saveAsTextFile(). Click on a job to see information about the stages of tasks inside it.">?</a>)
+    </sup>
+              </h3>
+            </div>
+          </div>
+          <div>
+        <ul class="unstyled">
+          <li>
+            <strong>User:</strong>
+            root
+          </li>
+          <li>
+            <strong>Total Uptime:</strong>
+            1.4 min
+          </li>
+          <li>
+            <strong>Scheduling Mode: </strong>
+            FIFO
+          </li>
+          <li>
+                <a href="#active"><strong>Active Jobs:</strong></a>
+                1
+              </li>
+          <li id="completed-summary">
+                <a href="#completed"><strong>Completed Jobs:</strong></a>
+                1
+              </li>
+
+        </ul>
+      </div><span class="expand-application-timeline">
+      <span class="expand-application-timeline-arrow arrow-closed"></span>
+      <a data-toggle="tooltip" title="Shows when jobs started and ended and when executors joined or left. Drag to scroll.
+       Click Enable Zooming and use mouse wheel to zoom in/out." data-placement="right">
+        Event Timeline
+      </a>
+    </span><div id="application-timeline" class="collapsed">
+      <div class="control-panel">
+        <div id="application-timeline-zoom-lock">
+          <input type="checkbox"></input>
+          <span>Enable zooming</span>
+        </div>
+      </div>
+    </div><script type="text/javascript">
+      drawApplicationTimeline(
+[
+  {
+    'id': 'executors',
+    'content': '<div>Executors</div><div class="legend-area"><svg width="150px" height="55px">      <rect class="executor-added-legend" x="5px" y="5px" width="20px" height="15px" rx="2px" ry="2px"></rect>      <text x="35px" y="17px">Added</text>      <rect class="executor-removed-legend" x="5px" y="30px" width="20px" height="15px" rx="2px" ry="2px"></rect>      <text x="35px" y="42px">Removed</text>    </svg></div>',
+  },
+  {
+    'id': 'jobs',
+    'content': '<div>Jobs</div><div class="legend-area"><svg width="150px" height="85px">      <rect class="succeeded-job-legend" x="5px" y="5px" width="20px" height="15px" rx="2px" ry="2px"></rect>      <text x="35px" y="17px">Succeeded</text>      <rect class="failed-job-legend" x="5px" y="30px" width="20px" height="15px" rx="2px" ry="2px"></rect>      <text x="35px" y="42px">Failed</text>      <rect class="running-job-legend" x="5px" y="55px" width="20px" height="15px" rx="2px" ry="2px"></rect>      <text x="35px" y="67px">Running</text>    </svg></div>',
+  }
+]
+        ,[
+{
+  'className': 'job application-timeline-object running',
+  'group': 'jobs',
+  'start': new Date(1597630676417),
+  'end': new Date(1597630687325),
+  'content': '<div class="application-timeline-content"' +
+     'data-html="true" data-placement="top" data-toggle="tooltip"' +
+     'data-title="takeSample at KMeans.scala:386 (Job 1)<br>' +
+     'Status: RUNNING<br>' +
+     'Submitted: 2020/08/17 02:17:56' +
+     '">' +
+    'takeSample at KMeans.scala:386 (Job 1)</div>'
+}
+         ,
+{
+  'className': 'job application-timeline-object succeeded',
+  'group': 'jobs',
+  'start': new Date(1597630616723),
+  'end': new Date(1597630676384),
+  'content': '<div class="application-timeline-content"' +
+     'data-html="true" data-placement="top" data-toggle="tooltip"' +
+     'data-title="takeSample at KMeans.scala:386 (Job 0)<br>' +
+     'Status: SUCCEEDED<br>' +
+     'Submitted: 2020/08/17 02:16:56' +
+     '<br>Completed: 2020/08/17 02:17:56">' +
+    'takeSample at KMeans.scala:386 (Job 0)</div>'
+}
+         ,
+{
+  'className': 'executor added',
+  'group': 'executors',
+  'start': new Date(1597630615787),
+  'content': '<div class="executor-event-content"' +
+    'data-toggle="tooltip" data-placement="bottom"' +
+    'data-title="Executor 1<br>' +
+    'Added at 2020/08/17 02:16:55"' +
+    'data-html="true">Executor 1 added</div>'
+}
+         ,
+{
+  'className': 'executor added',
+  'group': 'executors',
+  'start': new Date(1597630615838),
+  'content': '<div class="executor-event-content"' +
+    'data-toggle="tooltip" data-placement="bottom"' +
+    'data-title="Executor 2<br>' +
+    'Added at 2020/08/17 02:16:55"' +
+    'data-html="true">Executor 2 added</div>'
+}
+         ,
+{
+  'className': 'executor added',
+  'group': 'executors',
+  'start': new Date(1597630614806),
+  'content': '<div class="executor-event-content"' +
+    'data-toggle="tooltip" data-placement="bottom"' +
+    'data-title="Executor 3<br>' +
+    'Added at 2020/08/17 02:16:54"' +
+    'data-html="true">Executor 3 added</div>'
+}
+         ,
+{
+  'className': 'executor added',
+  'group': 'executors',
+  'start': new Date(1597630610275),
+  'content': '<div class="executor-event-content"' +
+    'data-toggle="tooltip" data-placement="bottom"' +
+    'data-title="Executor driver<br>' +
+    'Added at 2020/08/17 02:16:50"' +
+    'data-html="true">Executor driver added</div>'
+}
+         ], 1597630600982, 0);
+    </script><span id="active" class="collapse-aggregated-activeJobs collapse-table" onClick="collapseTable('collapse-aggregated-activeJobs','aggregated-activeJobs')">
+          <h4>
+            <span class="collapse-table-arrow arrow-open"></span>
+            <a>Active Jobs (1)</a>
+          </h4>
+        </span><div class="aggregated-activeJobs collapsible-table">
+          <div>
+
+        <table class="table table-bordered table-condensed table-striped table-head-clickable table-cell-width-limited" id="activeJob-table">
+          <thead><th class="">
+            <a href="/proxy/application_1597198515610_0069/jobs/?&activeJob.sort=Job+Id&activeJob.desc=false&activeJob.pageSize=100#active">
+              Job Id<span>
+              &nbsp;&#x25BE;
+            </span>
+            </a>
+          </th><th class="">
+              <a href="/proxy/application_1597198515610_0069/jobs/?&activeJob.sort=Description&activeJob.pageSize=100#active">
+                Description
+              </a>
+            </th><th class="">
+              <a href="/proxy/application_1597198515610_0069/jobs/?&activeJob.sort=Submitted&activeJob.pageSize=100#active">
+                Submitted
+              </a>
+            </th><th class="">
+              <a href="/proxy/application_1597198515610_0069/jobs/?&activeJob.sort=Duration&activeJob.pageSize=100#active">
+                Duration
+              </a>
+            </th><th class="">
+              Stages: Succeeded/Total
+            </th><th class="">
+              Tasks (for all stages): Succeeded/Total
+            </th></thead>
+          <tbody>
+            <tr id="job-1">
+      <td>
+        1
+      </td>
+      <td>
+        <span class="description-input">takeSample at KMeans.scala:386</span> <a href="/proxy/application_1597198515610_0069/jobs/job/kill/?id=1" onclick="if (window.confirm('Are you sure you want to kill job 1 ?')) { this.parentNode.submit(); return true; } else { return false; }" class="kill-link">(kill)</a>
+        <a href="/proxy/application_1597198515610_0069/jobs/job/?id=1" class="name-link">takeSample at KMeans.scala:386</a>
+      </td>
+      <td>
+        2020/08/17 02:17:56
+      </td>
+      <td>11 s</td>
+      <td class="stage-progress-cell">
+        0/1
+
+
+      </td>
+      <td class="progress-cell">
+        <div class="progress">
+      <span style="text-align:center; position:absolute; width:100%; left:0;">
+        12/30
+        (3 running)
+
+
+
+      </span>
+      <div class="bar bar-completed" style="width: 40.0%"></div>
+      <div class="bar bar-running" style="width: 10.0%"></div>
+    </div>
+      </td>
+    </tr>
+          </tbody>
+        </table>
+
+      </div>
+        </div><span id="completed" class="collapse-aggregated-completedJobs collapse-table" onClick="collapseTable('collapse-aggregated-completedJobs','aggregated-completedJobs')">
+          <h4>
+            <span class="collapse-table-arrow arrow-open"></span>
+            <a>Completed Jobs (1)</a>
+          </h4>
+        </span><div class="aggregated-completedJobs collapsible-table">
+          <div>
+
+        <table class="table table-bordered table-condensed table-striped table-head-clickable table-cell-width-limited" id="completedJob-table">
+          <thead><th class="">
+            <a href="/proxy/application_1597198515610_0069/jobs/?&completedJob.sort=Job+Id&completedJob.desc=false&completedJob.pageSize=100#completed">
+              Job Id<span>
+              &nbsp;&#x25BE;
+            </span>
+            </a>
+          </th><th class="">
+              <a href="/proxy/application_1597198515610_0069/jobs/?&completedJob.sort=Description&completedJob.pageSize=100#completed">
+                Description
+              </a>
+            </th><th class="">
+              <a href="/proxy/application_1597198515610_0069/jobs/?&completedJob.sort=Submitted&completedJob.pageSize=100#completed">
+                Submitted
+              </a>
+            </th><th class="">
+              <a href="/proxy/application_1597198515610_0069/jobs/?&completedJob.sort=Duration&completedJob.pageSize=100#completed">
+                Duration
+              </a>
+            </th><th class="">
+              Stages: Succeeded/Total
+            </th><th class="">
+              Tasks (for all stages): Succeeded/Total
+            </th></thead>
+          <tbody>
+            <tr id="job-0">
+      <td>
+        0
+      </td>
+      <td>
+        <span class="description-input">takeSample at KMeans.scala:386</span>
+        <a href="/proxy/application_1597198515610_0069/jobs/job/?id=0" class="name-link">takeSample at KMeans.scala:386</a>
+      </td>
+      <td>
+        2020/08/17 02:16:56
+      </td>
+      <td>60 s</td>
+      <td class="stage-progress-cell">
+        1/1
+
+
+      </td>
+      <td class="progress-cell">
+        <div class="progress">
+      <span style="text-align:center; position:absolute; width:100%; left:0;">
+        30/30
+
+
+
+
+      </span>
+      <div class="bar bar-completed" style="width: 100.0%"></div>
+      <div class="bar bar-running" style="width: 0.0%"></div>
+    </div>
+      </td>
+    </tr>
+          </tbody>
+        </table>
+
+      </div>
+        </div>
+        </div>
+      </body>
+    </html>

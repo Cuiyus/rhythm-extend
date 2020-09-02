@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig authType="PASSWORD" host="192.168.3.10" id="5ce05eab-5f8d-41aa-8922-6501918317cb" port="22" nameFormat="DESCRIPTIVE" username="tank-cys" />
+      <sshConfig authType="PASSWORD" host="192.168.1.106" id="f8490439-1861-4740-889e-2c11dd49b36b" port="22" nameFormat="DESCRIPTIVE" username="tank" />
+      <sshConfig authType="PASSWORD" host="192.168.1.107" id="919f7028-693d-414d-adb8-99c34811f303" localPort="22" port="22" nameFormat="DESCRIPTIVE" username="tank" />
+    </configs>
+  </component>
+</project>

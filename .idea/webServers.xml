@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="625d0291-7e96-43aa-9d12-c00b9ae2b30e" name="106-Spark">
+        <fileTransfer accessType="SFTP" host="192.168.1.106" port="22" sshConfigId="f8490439-1861-4740-889e-2c11dd49b36b" sshConfig="tank@192.168.1.106:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="acd3cf6d-b547-4e75-9bd2-9ad1c260bdac" name="106-Cnnbench">
+        <fileTransfer accessType="SFTP" host="192.168.1.106" port="22" sshConfigId="f8490439-1861-4740-889e-2c11dd49b36b" sshConfig="tank@192.168.1.106:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="c74d2c8c-b5d9-4af5-a267-eeeff20f4dad" name="tank-cys">
+        <fileTransfer accessType="SFTP" host="192.168.3.10" port="22" sshConfigId="5ce05eab-5f8d-41aa-8922-6501918317cb" sshConfig="tank-cys@192.168.3.10:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="2e31c57b-c8a4-4902-b12f-8a9b1eebeb00" name="106-Scimark">
+        <fileTransfer accessType="SFTP" host="192.168.1.106" port="22" sshConfigId="f8490439-1861-4740-889e-2c11dd49b36b" sshConfig="tank@192.168.1.106:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

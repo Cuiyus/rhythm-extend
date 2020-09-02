@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="106-Spark">
+    <serverData>
+      <paths name="106-Cnnbench">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/tank/cys/rhythm/BE/cnn-bench/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="106-Scimark">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/tank/cys/rhythm/BE/scimark" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="106-Spark">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/tank/cys/rhythm/BE/progress" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="tank-cys">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/tank-cys/deflation/tensorflow/scripts" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
