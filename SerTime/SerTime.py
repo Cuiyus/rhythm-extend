@@ -9,6 +9,8 @@ from watchdog.observers import Observer
 # Scimark启动样例
 # 需要为Scimark启动容器
 '''
+相当于一个不可预测队列：
+
 整体思路：
 类：scimarkHandler(FileSystemEventHandler) 用来监控实时scimark日志文件；
 方法：def monitorscimark(appdict)捕获已启动的scimark任务的pid以及启动时间戳
@@ -22,6 +24,7 @@ class scimarkHandler(FileSystemEventHandler):
     def __init__(self, appdict):
         super(scimarkHandler,self).__init__()
         self.appdict = appdict
+        self.lock = threading.RLock()
     def on_modified(self, event):
         if event.src_path == "/home/tank/cys/rhythm/BE/scimark/SerTime/Scimark/scilog/sci.log":
             with open(event.src_path,'r+') as f:
@@ -29,10 +32,15 @@ class scimarkHandler(FileSystemEventHandler):
                 info = last_lines.strip("\n").split(" ")
                 # self.info.append(info)
                 pid, startTime = info[0], info[1]
-                self.appdict[pid] = [startTime,]
+                self.lock.acquire()
+                try:
+                    self.appdict[pid] = [startTime,]
+                finally:
+                    self.lock.release()
 
 
-def monitorscimark(appdict):
+
+def sciRecord(appdict):
     '''
     监控scimark，当有新的scimark任务
     参数：appdict 存储了已启动的scimark的pid与启动时间戳
@@ -59,6 +67,16 @@ def appisAlive(pid):
         return True
     else:
         return False
+
+def monitorAppIsAlive(appdict):
+    for pid in appdict:
+        if not appisAlive(pid):
+            lock.acquire()
+            try:
+                appdict.pop(pid)
+            finally:
+                lock.release()
+
 
 def resource():
     '''
@@ -100,7 +118,6 @@ def getSertime():
 
     return jsonify(sertimeInfo)
 
-
 @app.route("/index", methods=["GET"])
 def index():
     return "启动成功"
@@ -113,10 +130,17 @@ def test(appdict):
 
 
 
+
+
 global appdict
 appdict = {}
-monitor = threading.Thread(target=monitorscimark, args=(appdict,))
-monitor.start()
+# sciRecore 以及 monitor都需要对appdict进行修改，为防止数据不同步,需要使用互斥锁
+lock = threading.RLock()
+scirecord = threading.Thread(target=sciRecord, args=(appdict,))
+moniotr = threading.Thread(target=monitorAppIsAlive, args=(appdict,))
+moniotr.start()
+scirecord.start()
+
 app.run(host="0.0.0.0",port=10086)
 
 
