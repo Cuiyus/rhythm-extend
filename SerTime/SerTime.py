@@ -109,13 +109,11 @@ app = Flask(__name__)
 def getSertime():
     sertimeInfo = {}
     for pid in appdict:
-        if appisAlive(pid):
-            localtime = int(time.time()*1000) # 毫秒
-            cpunum = resource()
-            sertime = (localtime - int(appdict[pid][0])) / 1000
-            appdict[pid].append([sertime, cpunum])
-            sertimeInfo[pid] = sertime * cpunum
-
+        localtime = int(time.time()*1000) # 毫秒
+        cpunum = resource()
+        sertime = (localtime - int(appdict[pid][0])) / 1000
+        appdict[pid].append([sertime, cpunum])
+        sertimeInfo[pid] = sertime * cpunum
     return jsonify(sertimeInfo)
 
 @app.route("/index", methods=["GET"])
@@ -127,9 +125,6 @@ def test(appdict):
         flag = input("是否")
         time.sleep(1)
         print(appdict)
-
-
-
 
 
 global appdict
