@@ -17,6 +17,9 @@ from watchdog.observers import Observer
 服务时间查询：
 1.设置interrupt环境变量作为查询信号，当interrupt变为True，程序记录运行时间以及资源量
 2.使用Webserver
+
+未实现的功能：
+缺乏对scimark的控制操作
 '''
 
 
@@ -101,18 +104,17 @@ def resource():
     return cpunum
 
 
-
 from flask import Flask,jsonify
 app = Flask(__name__)
 
 @app.route("/getSertime", methods=["GET"])
 def getSertime():
     sertimeInfo = {}
-    for pid in appdict:
+    for pid in hpc_appdict:
         localtime = int(time.time()*1000) # 毫秒
         cpunum = resource()
-        sertime = (localtime - int(appdict[pid][0])) / 1000
-        appdict[pid].append([sertime, cpunum])
+        sertime = (localtime - int(hpc_appdict[pid][0])) / 1000
+        hpc_appdict[pid].append([sertime, cpunum])
         sertimeInfo[pid] = sertime * cpunum
     return jsonify(sertimeInfo)
 
@@ -127,12 +129,12 @@ def test(appdict):
         print(appdict)
 
 
-global appdict
-appdict = {}
+global hpc_appdict
+hpc_appdict = {}
 # sciRecore 以及 monitor都需要对appdict进行修改，为防止数据不同步,需要使用互斥锁
 lock = threading.RLock()
-scirecord = threading.Thread(target=sciRecord, args=(appdict,))
-moniotr = threading.Thread(target=monitorAppIsAlive, args=(appdict,))
+scirecord = threading.Thread(target=sciRecord, args=(hpc_appdict,))
+moniotr = threading.Thread(target=monitorAppIsAlive, args=(hpc_appdict,))
 moniotr.start()
 scirecord.start()
 
