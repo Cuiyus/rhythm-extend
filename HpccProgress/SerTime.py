@@ -30,7 +30,7 @@ class scimarkHandler(FileSystemEventHandler):
         self.appdict = appdict
         self.lock = threading.RLock()
     def on_modified(self, event):
-        if event.src_path == "/home/tank/cys/rhythm/BE/scimark/HpccProgress/Scimark/scilog/sci.log":
+        if event.src_path == "/home/tank/cys/rhythm/BE/scimark/SerTime/Scimark/scilog/sci.log":
             with open(event.src_path,'r+') as f:
                 last_lines = f.readlines()[-1]
                 info = last_lines.strip("\n").split(" ")
@@ -50,8 +50,7 @@ class scimarkProgress(object):
         self.appDict = {}
         self.event_handler = None
         self.observer = None
-        self.path = r"/home/tank/cys/rhythm/BE/scimark/HpccProgress/Scimark/scilog/sci.log"
-        pass
+        self.path = r"/home/tank/cys/rhythm/BE/scimark/SerTime/Scimark/scilog/sci.log"
 
     def sciRecord(self):
         '''
