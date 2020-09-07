@@ -10,6 +10,7 @@ from watchdog.observers import Observer
 # 需要为Scimark启动容器
 '''
 相当于一个不可预测队列：
+web中视图函数返回的
 
 整体思路：
 类：scimarkHandler(FileSystemEventHandler) 用来监控实时scimark日志文件；
@@ -29,7 +30,7 @@ class scimarkHandler(FileSystemEventHandler):
         self.appdict = appdict
         self.lock = threading.RLock()
     def on_modified(self, event):
-        if event.src_path == "/home/tank/cys/rhythm/BE/scimark/SerTime/Scimark/scilog/sci.log":
+        if event.src_path == "/home/tank/cys/rhythm/BE/scimark/HpccProgress/Scimark/scilog/sci.log":
             with open(event.src_path,'r+') as f:
                 last_lines = f.readlines()[-1]
                 info = last_lines.strip("\n").split(" ")
@@ -43,51 +44,64 @@ class scimarkHandler(FileSystemEventHandler):
 
 
 
-def sciRecord(appdict):
-    '''
-    监控scimark，当有新的scimark任务
-    参数：appdict 存储了已启动的scimark的pid与启动时间戳
-    :return:
-    '''
-    sci_event_handler = scimarkHandler(appdict)
-    observer = Observer()
-    path = r"/home/tank/cys/rhythm/BE/scimark/SerTime/Scimark/scilog/sci.log"
-    observer.schedule(sci_event_handler, path=path, recursive=False)
-    observer.start()
-    try:
+class scimarkProgress(object):
+    def __init__(self):
+        self.lock = threading.RLock()
+        self.appDict = {}
+        self.event_handler = None
+        self.observer = None
+        self.path = r"/home/tank/cys/rhythm/BE/scimark/HpccProgress/Scimark/scilog/sci.log"
+        pass
+
+    def sciRecord(self):
+        '''
+        监控scimark，当有新的scimark任务
+        参数：appdict[pid:[starttime,]] 存储了已启动的scimark的pid与启动时间戳
+        :return:
+        '''
+        self.observer.schedule(self.event_handler, path=self.path, recursive=False)
+        self.observer.start()
+        try:
+            while True:
+                # update
+                time.sleep(1)
+        except KeyboardInterrupt:
+            self.observer.stop()
+        self.observer.join()
+
+    #监控Scimark的活跃进程
+    def appisAlive(self, pid):
+        cmd = "docker exec -i Scimark ps aux | grep {}".format(pid)
+        info = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
+        info = info.stdout.decode("utf-8")
+        if info:
+            return True
+        else:
+            return False
+
+    def monitorAppIsAlive(self):
         while True:
-            # update
-            time.sleep(1)
-    except KeyboardInterrupt:
-        observer.stop()
-    observer.join()
+            for pid in list(self.appDict):
+                if not self.appisAlive(pid):
+                    self.lock.acquire()
+                    try:
+                        del self.appDict[pid]
+                    finally:
+                        self.lock.release()
 
-def appisAlive(pid):
-    cmd = "docker exec -i Scimark ps aux | grep {}".format(pid)
-    info = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
-    info = info.stdout.decode("utf-8")
-    if info:
-        return True
-    else:
-        return False
+    def run(self):
+        rec = threading.Thread(target=self.sciRecord)
+        mon = threading.Thread(target=self.monitorAppIsAlive)
+        rec.start()
+        mon.start()
 
-def monitorAppIsAlive(appdict):
-    for pid in appdict:
-        if not appisAlive(pid):
-            lock.acquire()
-            try:
-                appdict.pop(pid)
-            finally:
-                lock.release()
-
-
-def resource():
+def resource(Container_name):
     '''
     获取容器资源数量（CPU）
     :return:
     '''
     cpunum = 0
-    cmd = "docker inspect {}|grep CpusetCpus ".format("Scimark")
+    cmd = "docker inspect {}|grep CpusetCpus ".format(Container_name)
     info = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
     info = info.stdout.decode("utf-8")
     cpupat = re.compile('"CpusetCpus": "(.*)"')
@@ -107,14 +121,19 @@ def resource():
 from flask import Flask,jsonify
 app = Flask(__name__)
 
+
 @app.route("/getSertime", methods=["GET"])
 def getSertime():
+    '''
+    :return:返回的scimark任务的服务时间序列（降序）： 运行时间（ms） * CPU数量
+    '''
     sertimeInfo = {}
-    for pid in hpc_appdict:
+    # for pid in hpc_appdict:
+    for pid in sci.appDict:
         localtime = int(time.time()*1000) # 毫秒
-        cpunum = resource()
-        sertime = (localtime - int(hpc_appdict[pid][0])) / 1000
-        hpc_appdict[pid].append([sertime, cpunum])
+        cpunum = resource("Scimark")
+        sertime = (localtime - int(sci.appDict[pid][0])) / 1000
+        sci.appDict[pid].append([sertime, cpunum])
         sertimeInfo[pid] = sertime * cpunum
     return jsonify(sertimeInfo)
 
@@ -122,26 +141,9 @@ def getSertime():
 def index():
     return "启动成功"
 
-def test(appdict):
-    while True:
-        flag = input("是否")
-        time.sleep(1)
-        print(appdict)
-
-
-global hpc_appdict
-hpc_appdict = {}
-# sciRecore 以及 monitor都需要对appdict进行修改，为防止数据不同步,需要使用互斥锁
-lock = threading.RLock()
-scirecord = threading.Thread(target=sciRecord, args=(hpc_appdict,))
-moniotr = threading.Thread(target=monitorAppIsAlive, args=(hpc_appdict,))
-moniotr.start()
-scirecord.start()
-
-app.run(host="0.0.0.0",port=10086)
-
-
-
-
-
-
+if __name__ == '__main__':
+    sci = scimarkProgress()
+    sci.event_handler = scimarkHandler(sci.appDict)
+    sci.observer = Observer()
+    sci.run()
+    app.run(host="0.0.0.0",port=10086)
