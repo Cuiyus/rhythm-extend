@@ -51,11 +51,10 @@ class sparkProgress(object):
             response = requests.get(url)
             response.raise_for_status()
             response.encoding = response.apparent_encoding
-            return response
         except requests.exceptions.HTTPError:
             print("{} 任务未完成初始化".format(ip))
             return None
-
+        return response
     def getProgress(self, res):
         # 使用了爬虫解析4040的spark页面
         '''
