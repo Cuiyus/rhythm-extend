@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 2. 采集正在运行时的task启动时间,可用来计算kill操作的是loss
 3. 修改为web触发式函数
 还需实现：
-1. 控制操作为controlSpark.py 但未整合
+-- 1. 控制操作为controlSpark.py 但未整合
 2. 没有获取读取检查点的开销
 代码缺陷：
 1. spark的活跃任务实际上不需要事实监控：
@@ -28,6 +28,7 @@ class sparkProgress(object):
         self.priority = []
 
     def getAppID_Port(self):
+        self.appDict = {}
         cmd = ["docker", "exec", "-i", "Spark-1", "yarn", "application", "-list"]
         yarninfo = subprocess.run(cmd, stdout=subprocess.PIPE)
         info = yarninfo.stdout.decode('utf-8').split('\n')
@@ -51,8 +52,11 @@ class sparkProgress(object):
             response = requests.get(url)
             response.raise_for_status()
             response.encoding = response.apparent_encoding
-        except requests.exceptions.HTTPError:
+        except requests.exceptions.HTTPError :
             print("{} 任务未完成初始化".format(ip))
+            return None
+        except requests.exceptions.ConnectionError:
+            print("连接错误")
             return None
         return response
     def getProgress(self, res):
@@ -104,7 +108,7 @@ class sparkProgress(object):
             p = self.getProgress(res)
             if "progress" not in p.keys(): continue
             # print("Spark任务 {0} 的工作进度为：---{1:.2f}%---".format(app, p["progress"] * 100))
-            self.priority.append([app, p["progress"] * 100])
+            self.priority.append([app, p["progress"], "spark"])
             self.priority.sort(key=lambda x: x[1], reverse=False)
 
     def getStageID(self, app, port=18080):
