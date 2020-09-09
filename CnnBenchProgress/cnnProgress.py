@@ -8,7 +8,7 @@ import subprocess
 1. 对分布式同步训练任务的监控及进度刻画以及实现
 2. web触发式查询
 未完成：
-1. 缺乏控制程序
+ -- 1. 缺乏控制程序
 2. 目前只能获取同步任务，缺乏对异步任务，非分布式任务的监控
 '''
 
@@ -18,6 +18,7 @@ class cnnProgress(object):
         self.priority = []
 
     def getAppDict(self):
+        self.appDict = {}
         cmd = ["docker", "exec", "-i", "Tensor-Worker-1", "bash", "/root/outins.sh"]
         info = subprocess.run(cmd, stdout=subprocess.PIPE)
         insInfo = info.stdout.decode('utf-8').split('\n')
@@ -44,7 +45,7 @@ class cnnProgress(object):
                     print("训练任务{}已提交,但未开始训练".format(i))
                 else:
                     totalStep, endstep, progress = stepPredict(optimusFunc, path, 0.22)
-                    self.priority.append([i, progress])
+                    self.priority.append([i, progress, "AI"])
 
             self.priority.sort(key=lambda x: x[1], reverse=False)
         else:
