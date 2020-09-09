@@ -1,11 +1,6 @@
-from watchdog.events import FileSystemEventHandler
-from watchdog.observers import Observer
-import time, subprocess
-import threading, re
-import numpy as np
-from scipy.optimize import curve_fit
-import sys, queue
 
+import time
+import sys
 sys.path.append(r"/home/tank/cys/rhythm/BE/rhythm-extend")
 '''
 生成两个队列，可预测与不可预测
@@ -41,6 +36,9 @@ spark = sparkProgress("192.168.1.106")
 from CnnBenchProgress.cnnProgress import cnnProgress
 cnn = cnnProgress()
 
+# Killer
+from BETopControler.controlkiller import killer
+killer = killer()
 
 def MultiQueue(priority, flag):
     '''
@@ -54,11 +52,11 @@ def MultiQueue(priority, flag):
     elif l >= 1:
         if flag == "unpredict":
             # 字典升序排序按照服务时间
-            maxSertime = max(priority.values())
+            maxSertime = max(priority.items(), key=lambda x:x[1][1])[1][1]
             for k,v in priority.items():
-                if 0 <= v < (0.3*maxSertime):
+                if 0 <= v[1] < (0.3*maxSertime):
                     k1.append(k)
-                elif (0.3*maxSertime) <= v < (0.6*maxSertime):
+                elif (0.3*maxSertime) <= v[1] < (0.6*maxSertime):
                     k2.append(k)
                 else:
                     k3.append(k)
@@ -83,37 +81,45 @@ def pickJob(unk,k):
         return None
     elif unk and not k:
         anw = unk[0] + unk[1] + unk[2]
-        return anw[0]
+        return ['unpredict',anw[0]]
     elif not unk and k:
         anw = k[0] + k[1] + k[2]
-        return anw[0]
+        return ['predict',anw[0]]
     else:
         for i in range(3):
             k1 = k[0] + unk[0]
             k2 = k[1] + unk[1]
             k3 = unk[2] + k[2]
         if len(k1):
-            return k1[0]
+            return ['predict', k1[0]]
         elif len(k2) and len(k1)== 0:
-            return k2[0]
+            return ['predict', k2[0]]
         else:
-            return k3[0]
+            return ['unpredict', k3[0]]
+
+def getHpccPriority(hpcc):
+    unpredict = {}
+    for i, pid in enumerate(hpcc.appDict):
+        localtime = int(time.time() * 1000)  # 毫秒
+        cpunum = resource("Scimark")
+        sertime = (localtime - int(hpcc.appDict[pid][0])) / 1000
+        unpredict[i] = [pid, sertime * cpunum, "sci"]
+
+    return unpredict
 
 
 from flask import Flask, jsonify
 app = Flask(__name__)
 @app.route('/getPriority', methods=["GET"])
 def getPriority():
-    # 不同类型任务的priority=[appid,Sertime/progress]
+    '''
+    返回一个json字符串：{kill: [appname,progress,apptype]}
+    :return:
+    '''
+    # 不同类型任务的priority=[appid,Sertime[/progress]]
     # sci
-    unpredict = {}
     t0 = int(time.time() * 1000)
-    for pid in sci.appDict:
-        localtime = int(time.time()*1000) # 毫秒
-        cpunum = resource("Scimark")
-        sertime = (localtime - int(sci.appDict[pid][0])) / 1000
-        unpredict[pid] = sertime * cpunum
-
+    unpredict = getHpccPriority(sci)
     # spark and ai
     predict = {}
     t1 = int(time.time() * 1000)
@@ -128,18 +134,29 @@ def getPriority():
         predict[i] = d
     t4 = int(time.time() * 1000)
     print("Sort priority {}".format(t4-t3))
+    print("AI appdict", cnn.appDict)
+    print("Spark appdict", spark.appDict)
 
     unk = MultiQueue(unpredict, "unpredict")
     k = MultiQueue(predict,"predict")
 
-    kill_job = pickJob(unk, k)
+    pick_job = pickJob(unk, k)
+    kill_job = None
+    if pick_job:
+        if pick_job[0] == "predict": kill_job = predict.get(0)
+        else:kill_job = unpredict.get(0)
+    else:
+        return "没有BE任务在运行"
 
     all_info = {}
     all_info["predict"] = predict
     all_info["unpredict"] = unpredict
     all_info["kill"] = kill_job
-    return jsonify(all_info)
 
+    killer.job_info = kill_job
+    killer.operating()
+
+    return jsonify(all_info)
 
 
 app.run(host="0.0.0.0", port=10089)
