@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize import curve_fit
 import os, re, time
-import subprocess
+import subprocess, threading
 
 '''
 功能；
@@ -34,22 +34,28 @@ class cnnProgress(object):
                 if len(insId) != 0 and len(insPid) != 0:  self.appDict[insId[0]] = insPid[0]
 
     def Priority(self):
-        self.getAppDict()
-        self.priority = []
-        if self.appDict:
-            print("有任务在运行")
-            jobId = self.appDict.keys()
-            for i in jobId:
-                path = "/home/tank/cys/rhythm/BE/cnn-bench/CnnBenchProgress/cnn_appinfo/{}.txt".format(i)
-                if stepPredict(optimusFunc, path, 0.22) is None:
-                    print("训练任务{}已提交,但未开始训练".format(i))
-                else:
-                    totalStep, endstep, progress = stepPredict(optimusFunc, path, 0.22)
-                    self.priority.append([i, progress, "AI"])
+        while True:
+            self.getAppDict()
+            self.priority = []
+            if self.appDict:
+                # print("有任务在运行")
+                jobId = self.appDict.keys()
+                for i in jobId:
+                    path = "/home/tank/cys/rhythm/BE/cnn-bench/CnnBenchProgress/cnn_appinfo/{}.txt".format(i)
+                    if stepPredict(optimusFunc, path, 0.22) is None:
+                        # print("训练任务{}已提交,但未开始训练".format(i))
+                        pass
+                    else:
+                        totalStep, endstep, progress = stepPredict(optimusFunc, path, 0.22)
+                        self.priority.append([i, progress, "AI"])
 
-            self.priority.sort(key=lambda x: x[1], reverse=False)
-        else:
-            print("没有任务在运行")
+                self.priority.sort(key=lambda x: x[1], reverse=False)
+            time.sleep(1)
+
+    def run(self):
+        pri = threading.Thread(target=self.Priority)
+        pri.start()
+
 
 def optimusFunc(step, a, b, c):
     return np.power(a * step + b, -1) + c
@@ -78,6 +84,9 @@ def stepPredict(func, data_path, loss):
     totalStep =  1/((loss - c) * a) - (b/a)
     progress = x[-1] / totalStep
     return totalStep, x[-1], progress
+
+
+
 
 from flask import Flask, jsonify
 app = Flask(__name__)
