@@ -28,13 +28,15 @@ sci.event_handler = scimarkHandler(sci.appDict)
 sci.observer = Observer()
 sci.run()
 
-# Spark
+# 启动Spark监控，每一秒更新一次spark的任务信息
 from SparkProgress.spiderForSpark import sparkProgress
 spark = sparkProgress("192.168.1.106")
+spark.run()
 
-# AI
+# 启动AI监控，每一秒更新一次AI的任务信息
 from CnnBenchProgress.cnnProgress import cnnProgress
 cnn = cnnProgress()
+cnn.run()
 
 # Killer
 from BETopControler.controlkiller import killer
@@ -42,7 +44,6 @@ killer = killer()
 
 def MultiQueue(priority, flag):
     '''
-    划分为三级队列, 0-30%;30%-60%;60%-100%;
     :param priority:
     :return:
     '''
@@ -70,46 +71,62 @@ def MultiQueue(priority, flag):
                     k3.append(v[0])
     return [k1,k2,k3]
 
-def pickJob(unk,k):
+def pickJob(unp,p):
     '''
-    在0%-60%之间
-    :param unk:不可预测队列
-    :param k: 可预测
+    :param unp:不可预测队列
+    :param p: 可预测
     :return: 要被kill的任务
     '''
-    if not unk and not k:
+    if not unp and not p:
         return None
-    elif unk and not k:
-        anw = unk[0] + unk[1] + unk[2]
-        return ['unpredict',anw[0]]
-    elif not unk and k:
-        anw = k[0] + k[1] + k[2]
-        return ['predict',anw[0]]
+    elif unp and not p:
+        anw = unp[0]
+        return ['unpredict',anw]
+    elif not unp and p:
+        anw = p[0]
+        return ['predict',anw]
     else:
-        for i in range(3):
-            k1 = k[0] + unk[0]
-            k2 = k[1] + unk[1]
-            k3 = unk[2] + k[2]
-        if len(k1):
-            return ['predict', k1[0]]
-        elif len(k2) and len(k1)== 0:
-            return ['predict', k2[0]]
-        else:
-            return ['unpredict', k3[0]]
+        if unp[0][1] > p[0][1]:
+            anw = p[0]
+            return ['predict', anw]
+        elif unp[0][1] == p[0][1]:
+            anw = p[0]
+            return ['predict', anw]
+        elif unp[0][1] < p[0][1]:
+            anw = unp[0]
+            return ['unpredict', anw]
 
 def getHpccPriority(hpcc):
-    unpredict = {}
+    '''
+    :param hpcc: scimark的监控对象
+    :return:
+    sciAppdict 存储有scimark信息的字典 -- 方便转换为json传递
+    unpredict 存储有scimark信息的列表,以按照服务时间排序 -- 方便优先级排序
+    '''
+    sciAppdict = {}
+    unpredict = []
     for i, pid in enumerate(hpcc.appDict):
         localtime = int(time.time() * 1000)  # 毫秒
         cpunum = resource("Scimark")
         sertime = (localtime - int(hpcc.appDict[pid][0])) / 1000
-        unpredict[i] = [pid, sertime * cpunum, "sci"]
-
-    return unpredict
+        sciAppdict[i] = [pid, sertime * cpunum, "sci"]
+        unpredict.append([pid, sertime * cpunum, "sci"])
+    maxSertime = max(sciAppdict.items(), key=lambda x: x[1][1])[1][1]
+    for app in unpredict: app[1] = app[1] / maxSertime
+    unpredict.sort(key=lambda x:x[1], reverse=False)
+    return sciAppdict, unpredict
 
 
 from flask import Flask, jsonify
 app = Flask(__name__)
+@app.route('/getSparkJob',methods=["GET"])
+def getSparkJob():
+    return jsonify(spark.appDict)
+
+@app.route('/getAIJob',methods=["GET"])
+def getSparkJob():
+    return jsonify(cnn.appDict)
+
 @app.route('/getPriority', methods=["GET"])
 def getPriority():
     '''
@@ -118,39 +135,42 @@ def getPriority():
     '''
     # 不同类型任务的priority=[appid,Sertime[/progress]]
     # sci
+    predict_appinfo = {}
+
     t0 = int(time.time() * 1000)
-    unpredict = getHpccPriority(sci)
+    # 获取存储有scimark不可预测任务信息的队列
+    unpredict_appinfo, unpredict_priority = getHpccPriority(sci)
     # spark and ai
-    predict = {}
     t1 = int(time.time() * 1000)
-    spark.Priority()
-    t2 = int(time.time() * 1000)
-    cnn.Priority()
+    # spark.Priority()
+    # t2 = int(time.time() * 1000)
+    # cnn.Priority()
     t3 = int(time.time() * 1000)
-    print("Sci:{} Spark:{} CNN:{}".format((t1-t0),(t2-t1),(t3-t2)))
-    priority = spark.priority + cnn.priority
-    priority.sort(key=lambda x: x[1], reverse=False)
-    for i,d in enumerate(priority):
-        predict[i] = d
+    print("Sci:{}".format((t1-t0)))
+    # 获取存储有AI与spark不可预测任务信息的队列
+    predict_priority = spark.priority + cnn.priority
+    predict_priority.sort(key=lambda x: x[1], reverse=False)
+    for i,d in enumerate(predict_priority):
+        predict_appinfo[i] = d
     t4 = int(time.time() * 1000)
     print("Sort priority {}".format(t4-t3))
     print("AI appdict", cnn.appDict)
     print("Spark appdict", spark.appDict)
 
-    unk = MultiQueue(unpredict, "unpredict")
-    k = MultiQueue(predict,"predict")
+    # unk = MultiQueue(unpredict, "unpredict")
+    # k = MultiQueue(predict,"predict")
 
-    pick_job = pickJob(unk, k)
+    pick_job = pickJob(unpredict_priority, predict_priority)
     kill_job = None
     if pick_job:
-        if pick_job[0] == "predict": kill_job = predict.get(0)
-        else:kill_job = unpredict.get(0)
+        if pick_job[0] == "predict": kill_job = predict_appinfo.get(0)
+        else:kill_job = unpredict_appinfo.get(0)
     else:
         return "没有BE任务在运行"
 
     all_info = {}
-    all_info["predict"] = predict
-    all_info["unpredict"] = unpredict
+    all_info["predict"] = predict_appinfo
+    all_info["unpredict"] = unpredict_appinfo
     all_info["kill"] = kill_job
 
     killer.job_info = kill_job
