@@ -15,6 +15,7 @@ import subprocess, threading
 class cnnProgress(object):
     def __init__(self):
         self.appDict = {}
+        # 用于存储AI的任务进度等信息,["11115",0.047367773968495654,"AI"]
         self.priority = []
 
     def getAppDict(self):
