@@ -24,7 +24,8 @@ class sparkProgress(object):
     def __init__(self, ip):
         self.ip = ip
         self.appDict = {}
-        self.runningtaskdata = []
+
+        # 用于存储spark的任务进度等信息,["application_1599144170737_0039", 0.06666666666666667, "spark"]
         self.priority = []
 
     def getAppID_Port(self):
@@ -59,6 +60,7 @@ class sparkProgress(object):
             print("连接错误")
             return None
         return response
+
     def getProgress(self, res):
         # 使用了爬虫解析4040的spark页面
         '''
@@ -98,18 +100,26 @@ class sparkProgress(object):
         finally:
             return progress
 
-
     def Priority(self):
-        self.getAppID_Port()
-        self.priority=[]
-        for app in self.appDict:
-            res = self.getResponse(self.ip, self.appDict[app])
-            if res is None: continue
-            p = self.getProgress(res)
-            if "progress" not in p.keys(): continue
-            # print("Spark任务 {0} 的工作进度为：---{1:.2f}%---".format(app, p["progress"] * 100))
-            self.priority.append([app, p["progress"], "spark"])
-            self.priority.sort(key=lambda x: x[1], reverse=False)
+        while True:
+            self.getAppID_Port()
+            self.priority=[]
+            for app in self.appDict:
+                res = self.getResponse(self.ip, self.appDict[app])
+                if res is None: continue
+                p = self.getProgress(res)
+                if "progress" not in p.keys(): continue
+                # print("Spark任务 {0} 的工作进度为：---{1:.2f}%---".format(app, p["progress"] * 100))
+                self.priority.append([app, p["progress"], "spark"])
+                self.priority.sort(key=lambda x: x[1], reverse=False)
+            time.sleep(1)
+
+    def run(self):
+        pri = threading.Thread(target=self.Priority)
+        pri.start()
+
+
+    # getStageID，getRunningTask，getCoarseGrainedExecutorPort 都是针对单个spark application的类方法
 
     def getStageID(self, app, port=18080):
         '''
@@ -169,6 +179,26 @@ class sparkProgress(object):
                 runningtaskdata.append(info)
 
         return runningtaskdata
+
+    def getCoarseGrainedExecutorPort(self):
+        url = "http://{0}:{1}/api/v1/applications/{2}/executors/".format(self.ip, self.port, self.jobinfo[0])
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            response.encoding = response.apparent_encoding
+        except requests.exceptions.HTTPError:
+            print("{} 任务未完成初始化".format(self.jobinfo[0]))
+            return None
+        # Spark Application Driver
+        driver = response.json()[0]
+        executor = response.json()[1:]
+        for exe in executor:
+            address, port = exe["hostPort"].split(":")
+            self.executor_dict[address] = port
+
+
+
+
 
 
 from flask import Flask,jsonify
