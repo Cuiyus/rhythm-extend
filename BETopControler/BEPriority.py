@@ -105,16 +105,17 @@ def getHpccPriority(hpcc):
     '''
     sciAppdict = {}
     unpredict = []
-    for i, pid in enumerate(hpcc.appDict):
-        localtime = int(time.time() * 1000)  # 毫秒
-        cpunum = resource("Scimark")
-        sertime = (localtime - int(hpcc.appDict[pid][0])) / 1000
-        sciAppdict[i] = [pid, sertime * cpunum, "sci"]
-        unpredict.append([pid, sertime * cpunum, "sci"])
-    maxSertime = max(sciAppdict.items(), key=lambda x: x[1][1])[1][1]
-    for app in unpredict: app[1] = app[1] / maxSertime
-    unpredict.sort(key=lambda x:x[1], reverse=False)
-    return sciAppdict, unpredict
+    if hpcc.appDict:
+        for i, pid in enumerate(hpcc.appDict):
+            localtime = int(time.time() * 1000)  # 毫秒
+            cpunum = resource("Scimark")
+            sertime = (localtime - int(hpcc.appDict[pid][0])) / 1000
+            sciAppdict[i] = [pid, sertime * cpunum, "sci"]
+            unpredict.append([pid, sertime * cpunum, "sci"])
+        maxSertime = max(sciAppdict.items(), key=lambda x: x[1][1])[1][1]
+        for app in unpredict: app[1] = app[1] / maxSertime
+        unpredict.sort(key=lambda x:x[1], reverse=False)
+        return sciAppdict, unpredict
 
 
 from flask import Flask, jsonify
