@@ -112,7 +112,7 @@ class sparkProgress(object):
             print("The spark Job提交后未完成任务初始化，Total Task= 0")
             return None
 
-        self.priority.append([app[0], p["progress"], "spark"])
+        self.priority.append([app[0], progress["progress"], "spark"])
         return progress
 
     def Priority(self):
