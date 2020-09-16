@@ -29,23 +29,23 @@ class sparkProgress(object):
         self.priority = []
 
     def getAppID_Port(self):
-        self.appDict = {}
-        cmd = ["docker", "exec", "-i", "Spark-1", "yarn", "application", "-list"]
-        yarninfo = subprocess.run(cmd, stdout=subprocess.PIPE)
-        info = yarninfo.stdout.decode('utf-8').split('\n')
-        if len(info) > 2:
-            data = info[2:]
-            for d in data:
-                appIdPat = re.compile(r"application_\d{13}_\d{4}")
-                appId = re.findall(appIdPat, d)
-                appPortPat = re.compile(r"http://master:(\d{4})")
-                appPort = re.findall(appPortPat, d)
-                # print(appId, appPort)
-                try:
-                    if len(appId) != 0 and len(appPort) != 0:
-                        self.appDict[appId[0]] = appPort[0]
-                finally:
-                    pass
+        while True:
+            cmd = ["docker", "exec", "-i", "Spark-1", "yarn", "application", "-list"]
+            yarninfo = subprocess.run(cmd, stdout=subprocess.PIPE)
+            info = yarninfo.stdout.decode('utf-8').split('\n')
+            if len(info) > 2:
+                data = info[2:]
+                for d in data:
+                    appIdPat = re.compile(r"application_\d{13}_\d{4}")
+                    appId = re.findall(appIdPat, d)
+                    appPortPat = re.compile(r"http://master:(\d{4})")
+                    appPort = re.findall(appPortPat, d)
+                    # print(appId, appPort)
+                    try:
+                        if len(appId) != 0 and len(appPort) != 0:
+                            self.appDict[appId[0]] = appPort[0]
+                    finally:
+                        pass
 
     def getResponse(self, ip, port):
         url = "http://{0}:{1}".format(ip, port)
@@ -102,7 +102,6 @@ class sparkProgress(object):
 
     def Priority(self):
         while True:
-            self.getAppID_Port()
             self.priority=[]
             for app in self.appDict:
                 res = self.getResponse(self.ip, self.appDict[app])
@@ -112,10 +111,11 @@ class sparkProgress(object):
                 # print("Spark任务 {0} 的工作进度为：---{1:.2f}%---".format(app, p["progress"] * 100))
                 self.priority.append([app, p["progress"], "spark"])
                 self.priority.sort(key=lambda x: x[1], reverse=False)
-            time.sleep(1)
 
     def run(self):
+        updateappDict = threading.Thread(target=self.getAppID_Port)
         pri = threading.Thread(target=self.Priority)
+        updateappDict.start()
         pri.start()
 
 
