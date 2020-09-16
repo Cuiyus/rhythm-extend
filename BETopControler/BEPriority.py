@@ -129,7 +129,7 @@ def getSparkJob():
 def getAIJob():
     return jsonify(cnn.appDict)
 
-@app.route('/getPriority', methods=["GET"])
+@app.route('/killer', methods=["GET"])
 def getPriority():
     '''
     返回一个json字符串：{kill: [appname,progress,apptype]}
@@ -178,6 +178,34 @@ def getPriority():
     killer.job_info = kill_job
     killer.operating()
 
+    return jsonify(all_info)
+
+@app.route('/getPriority', methods=["GET"])
+def getPriority():
+    '''
+    返回一个json字符串：{kill: [appname,progress,apptype]}
+    :return:
+    '''
+    # 不同类型任务的priority=[appid,Sertime[/progress]]
+    # sci
+    predict_appinfo = {}
+    unpredict_appinfo, unpredict_priority = getHpccPriority(sci)
+    # 获取存储有AI与spark不可预测任务信息的队列
+    predict_priority = spark.priority + cnn.priority
+    predict_priority.sort(key=lambda x: x[1], reverse=False)
+    for i,d in enumerate(predict_priority):
+        predict_appinfo[i] = d
+    pick_job = pickJob(unpredict_priority, predict_priority)
+    kill_job = None
+    if pick_job:
+        if pick_job[0] == "predict": kill_job = predict_appinfo.get(0)
+        else:kill_job = unpredict_appinfo.get(0)
+    else:
+        return "没有BE任务在运行"
+    all_info = {}
+    all_info["predict"] = predict_appinfo
+    all_info["unpredict"] = unpredict_appinfo
+    all_info["kill"] = kill_job
     return jsonify(all_info)
 
 if __name__ == '__main__':
