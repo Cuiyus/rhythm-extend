@@ -129,6 +129,8 @@ class sparkProgress(object):
     def run(self):
         updateappDict = threading.Thread(target=self.getAppID_Port)
         updateappDict.start()
+        priority = threading.Thread(target=self.Priority)
+        priority.start()
 
 
 
