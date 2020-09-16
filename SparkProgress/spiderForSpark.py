@@ -31,7 +31,7 @@ class sparkProgress(object):
     def getAppID_Port(self):
         while True:
             cmd = ["docker", "exec", "-i", "Spark-1", "yarn", "application", "-list"]
-            yarninfo = subprocess.run(cmd, stdout=subprocess.PIPE)
+            yarninfo = subprocess.run(cmd, stdout=subprocess.PIPE,stderr=subprocess.DEVNULL)
             info = yarninfo.stdout.decode('utf-8').split('\n')
             if len(info) > 2:
                 data = info[2:]
