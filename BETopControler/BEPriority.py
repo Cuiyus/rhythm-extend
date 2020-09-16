@@ -130,7 +130,7 @@ def getAIJob():
     return jsonify(cnn.appDict)
 
 @app.route('/killer', methods=["GET"])
-def getPriority():
+def killer():
     '''
     返回一个json字符串：{kill: [appname,progress,apptype]}
     :return:
