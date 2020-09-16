@@ -23,7 +23,7 @@ from bs4 import BeautifulSoup
 class sparkProgress(object):
     def __init__(self, ip):
         self.ip = ip
-        self.appDict = {}
+        self.appDict = set()
 
         # 用于存储spark的任务进度等信息,["application_1599144170737_0039", 0.06666666666666667, "spark"]
         self.priority = []
@@ -36,14 +36,15 @@ class sparkProgress(object):
             if len(info) > 2:
                 data = info[2:]
                 for d in data:
-                    appIdPat = re.compile(r"application_\d{13}_\d{4}")
-                    appId = re.findall(appIdPat, d)
+                    appnamePat = re.compile(r"application_\d{13}_\d{4}")
+                    appName = re.findall(appnamePat, d)
                     appPortPat = re.compile(r"http://master:(\d{4})")
                     appPort = re.findall(appPortPat, d)
                     # print(appId, appPort)
                     try:
-                        if len(appId) != 0 and len(appPort) != 0:
-                            self.appDict[appId[0]] = appPort[0]
+                        if len(appName) != 0 and len(appPort) != 0:
+                            # self.appDict[appId[0]] = appPort[0]
+                            self.appDict.add({appName[0], appPort[0]})
                     finally:
                         pass
 
@@ -57,16 +58,28 @@ class sparkProgress(object):
             print("{} 任务未完成初始化".format(ip))
             return None
         except requests.exceptions.ConnectionError:
-            print("连接错误")
+            print("连接错误{}".format(url))
             return None
         return response
 
-    def getProgress(self, res):
+    def getProgress(self, app):
         # 使用了爬虫解析4040的spark页面
         '''
         :param res:
         :return:获取单个任务的工作进度
         '''
+        url = "http://{0}:{1}".format(self.ip, app[1])
+        try:
+            res = requests.get(url)
+            res.raise_for_status()
+            res.encoding = res.apparent_encoding
+        except requests.exceptions.HTTPError:
+            print("{} 任务未完成初始化".format(app[0]))
+            return None
+        except requests.exceptions.ConnectionError:
+            print("任务：{} --- 连接错误".format(app[0]))
+            return None
+
         soup = BeautifulSoup(res.text.encode("utf-8"), 'lxml')
         res1 = soup.select('span[style="text-align:center; position:absolute; width:100%; left:0;"]')
         progress = {}
@@ -97,19 +110,21 @@ class sparkProgress(object):
             progress["progress"] = running_task / total_task
         except ZeroDivisionError:
             print("The spark Job提交后未完成任务初始化，Total Task= 0")
-        finally:
-            return progress
+            return None
+
+        self.priority.append([app[0], p["progress"], "spark"])
+        return progress
 
     def Priority(self):
-        self.priority=[]
-        for app in list(self.appDict.keys()):
-            res = self.getResponse(self.ip, self.appDict[app])
-            if res is None: continue
-            p = self.getProgress(res)
-            if "progress" not in p.keys(): continue
-            # print("Spark任务 {0} 的工作进度为：---{1:.2f}%---".format(app, p["progress"] * 100))
-            self.priority.append([app, p["progress"], "spark"])
-            self.priority.sort(key=lambda x: x[1], reverse=False)
+        self.priority = []
+        progress_thread = []
+        for app in self.appDict:
+            t = threading.Thread(target=self.getProgress, args=(app,))
+            t.start()
+            progress_thread.append(t)
+        for t in progress_thread:
+            t.join()
+        self.priority.sort(key=lambda x: x[1], reverse=False)
 
     def run(self):
         updateappDict = threading.Thread(target=self.getAppID_Port)
