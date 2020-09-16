@@ -123,7 +123,9 @@ from flask import Flask, jsonify
 app = Flask(__name__)
 @app.route('/getSparkJob',methods=["GET"])
 def getSparkJob():
-    return jsonify(spark.appDict)
+    sparkDict = {}
+    for i, app in enumerate(spark.appDict): sparkDict[i] = app
+    return jsonify(sparkDict)
 
 @app.route('/getAIJob',methods=["GET"])
 def getAIJob():
