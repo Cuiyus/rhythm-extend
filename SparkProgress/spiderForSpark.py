@@ -44,7 +44,7 @@ class sparkProgress(object):
                     try:
                         if len(appName) != 0 and len(appPort) != 0:
                             # self.appDict[appId[0]] = appPort[0]
-                            self.appDict.add({appName[0], appPort[0]})
+                            self.appDict.add((appName[0], appPort[0]))
                     finally:
                         pass
 
