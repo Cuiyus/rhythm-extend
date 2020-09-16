@@ -124,7 +124,7 @@ def getSparkJob():
     return jsonify(spark.appDict)
 
 @app.route('/getAIJob',methods=["GET"])
-def getSparkJob():
+def getAIJob():
     return jsonify(cnn.appDict)
 
 @app.route('/getPriority', methods=["GET"])
