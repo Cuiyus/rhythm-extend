@@ -178,5 +178,6 @@ def getPriority():
 
     return jsonify(all_info)
 
-
-app.run(host="0.0.0.0", port=10089)
+if __name__ == '__main__':
+    print("Flask启动")
+    app.run(host="0.0.0.0", port=10089)
