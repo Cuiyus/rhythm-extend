@@ -101,22 +101,20 @@ class sparkProgress(object):
             return progress
 
     def Priority(self):
-        while True:
-            self.priority=[]
-            for app in list(self.appDict.keys()):
-                res = self.getResponse(self.ip, self.appDict[app])
-                if res is None: continue
-                p = self.getProgress(res)
-                if "progress" not in p.keys(): continue
-                # print("Spark任务 {0} 的工作进度为：---{1:.2f}%---".format(app, p["progress"] * 100))
-                self.priority.append([app, p["progress"], "spark"])
-                self.priority.sort(key=lambda x: x[1], reverse=False)
+        self.priority=[]
+        for app in list(self.appDict.keys()):
+            res = self.getResponse(self.ip, self.appDict[app])
+            if res is None: continue
+            p = self.getProgress(res)
+            if "progress" not in p.keys(): continue
+            # print("Spark任务 {0} 的工作进度为：---{1:.2f}%---".format(app, p["progress"] * 100))
+            self.priority.append([app, p["progress"], "spark"])
+            self.priority.sort(key=lambda x: x[1], reverse=False)
 
     def run(self):
         updateappDict = threading.Thread(target=self.getAppID_Port)
-        pri = threading.Thread(target=self.Priority)
         updateappDict.start()
-        pri.start()
+
 
 
     # getStageID，getRunningTask，getCoarseGrainedExecutorPort 都是针对单个spark application的类方法
