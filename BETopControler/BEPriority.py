@@ -105,7 +105,7 @@ def getHpccPriority(hpcc):
     '''
     sciAppdict = {}
     unpredict = []
-    if not hpcc.appDict: return None
+    if not hpcc.appDict: return None, None
     for i, pid in enumerate(hpcc.appDict):
         localtime = int(time.time() * 1000)  # 毫秒
         cpunum = resource("Scimark")
