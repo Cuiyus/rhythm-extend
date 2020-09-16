@@ -103,7 +103,7 @@ class sparkProgress(object):
     def Priority(self):
         while True:
             self.priority=[]
-            for app in self.appDict:
+            for app in list(self.appDict.keys()):
                 res = self.getResponse(self.ip, self.appDict[app])
                 if res is None: continue
                 p = self.getProgress(res)
