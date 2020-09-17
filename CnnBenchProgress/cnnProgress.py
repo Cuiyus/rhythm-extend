@@ -14,47 +14,72 @@ import subprocess, threading
 
 class cnnProgress(object):
     def __init__(self):
-        self.appDict = {}
+        self.appDict = set()
         # 用于存储AI的任务进度等信息,["11115",0.047367773968495654,"AI"]
         self.priority = []
+        self.lock = threading.RLock()
+        self.appProgress = []
+
+
+    def refreshAppDict(self, data):
+        try:
+            self.lock.acquire()
+            self.appDict.clear()
+            self.appDict = self.appDict.union(data)
+        finally:
+            self.lock.release()
+
+    def refreshPriority(self):
+        try:
+            self.lock.acquire()
+            self.priority.clear()
+            self.priority = self.priority + self.appProgress
+        finally:
+            self.lock.release()
 
     def getAppDict(self):
-        self.appDict = {}
-        cmd = ["docker", "exec", "-i", "Tensor-Worker-1", "bash", "/root/outins.sh"]
-        info = subprocess.run(cmd, stdout=subprocess.PIPE)
-        insInfo = info.stdout.decode('utf-8').split('\n')
-        if len(insInfo) == 0:
-            print("没有正在运行的训练任务")
-            return None
-        else:
-            for d in insInfo:
-                insIdPat = re.compile(r'TCP \*:(\d{4,5}) \(LISTEN\)')
-                insPidPat = re.compile(r'tf_cnn_be (\d{3,5}) root')
-                insId = insIdPat.findall(d)
-                insPid = insPidPat.findall(d)
-                if len(insId) != 0 and len(insPid) != 0:  self.appDict[insId[0]] = insPid[0]
+        while True:
+            cmd = ["docker", "exec", "-i", "Tensor-Worker-1", "bash", "/root/outins.sh"]
+            info = subprocess.run(cmd, stdout=subprocess.PIPE)
+            insInfo = info.stdout.decode('utf-8').split('\n')
+            appinfo = set()
+            if len(insInfo) == 0:
+                print("没有正在运行的训练任务")
+                return None
+            else:
+                for d in insInfo:
+                    insIdPat = re.compile(r'TCP \*:(\d{4,5}) \(LISTEN\)') # 端口号
+                    insPidPat = re.compile(r'tf_cnn_be (\d{3,5}) root') # 进程ID
+                    insId = insIdPat.findall(d)
+                    insPid = insPidPat.findall(d)
+                    if len(insId) != 0 and len(insPid) != 0:
+                        appinfo.add((insId[0], insPid[0]))
+            self.refreshAppDict(appinfo)
+
+    def getProgress(self, app):
+        path = "/home/tank/cys/rhythm/BE/cnn-bench/CnnBenchProgress/cnn_appinfo/{}.txt".format(app[0])
+        totalStep, endstep, progress = stepPredict(optimusFunc, path, 0.22)
+        self.appProgress.append([app[0], progress, "AI"])
+
 
     def Priority(self):
         while True:
-            self.getAppDict()
-            self.priority = []
-            if self.appDict:
-                # print("有任务在运行")
-                jobId = self.appDict.keys()
-                for i in jobId:
-                    path = "/home/tank/cys/rhythm/BE/cnn-bench/CnnBenchProgress/cnn_appinfo/{}.txt".format(i)
-                    if stepPredict(optimusFunc, path, 0.22) is None:
-                        # print("训练任务{}已提交,但未开始训练".format(i))
-                        pass
-                    else:
-                        totalStep, endstep, progress = stepPredict(optimusFunc, path, 0.22)
-                        self.priority.append([i, progress, "AI"])
+            self.appProgress = []
+            progress_thread = []
+            for app in list(self.appDict):
+                t = threading.Thread(target=self.getProgress, args=(app,))
+                t.start()
+                progress_thread.append(t)
+            for p in progress_thread:
+                p.join()
 
-                self.priority.sort(key=lambda x: x[1], reverse=False)
-            time.sleep(1)
+            self.refreshPriority()
+            self.priority.sort(key=lambda x: x[1], reverse=False)
 
     def run(self):
+        updateappDict = threading.Thread(target=self.getAppDict)
         pri = threading.Thread(target=self.Priority)
+        updateappDict.start()
         pri.start()
 
 
@@ -78,7 +103,7 @@ def stepPredict(func, data_path, loss):
     x = [int(d[0]) for d in step_loss]
     y = [float(d[1]) for d in step_loss]
     if len(x)==0 and len(y) ==0 :
-        return None
+        return None,None,None
     popt, pcov = curve_fit(func, x[:], y[:], bounds=(0, [3., 1., 0.19]))
     # popt, pcov = curve_fit(func, x[1000], y, bounds=(0, [3., 1., 0.19]))
     a, b, c = popt[0], popt[1], popt[2]

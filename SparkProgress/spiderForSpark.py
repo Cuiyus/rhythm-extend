@@ -56,7 +56,6 @@ class sparkProgress(object):
 
     def getAppID_Port(self):
         while True:
-            t1 = int(time.time() * 1000)
             cmd = ["docker", "exec", "-i", "Spark-1", "yarn", "application", "-list"]
             yarninfo = subprocess.run(cmd, stdout=subprocess.PIPE,stderr=subprocess.DEVNULL)
             info = yarninfo.stdout.decode('utf-8').split('\n')
@@ -75,9 +74,6 @@ class sparkProgress(object):
                             appinfo.add((appName[0], appPort[0]))
                     finally:
                         pass
-                self.reflashAppDict(appinfo)
-                t2 = int(time.time() * 1000)
-                print("获取appDict的时间：{}".format((t2 - t1)))
                 self.reflashAppDict(appinfo)
 
 
