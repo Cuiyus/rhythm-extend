@@ -27,10 +27,15 @@ class sparkProgress(object):
 
         # 用于存储spark的任务进度等信息,["application_1599144170737_0039", 0.06666666666666667, "spark"]
         self.priority = []
+        self.lock = threading.RLock
 
     def reflashAppDict(self, data):
-        self.appDict.clear()
-        self.appDict = self.appDict.union(data)
+        try:
+            self.lock.acquire()
+            self.appDict.clear()
+            self.appDict = self.appDict.union(data)
+        finally:
+            self.lock.acquire()
 
 
     def getAppID_Port(self):
