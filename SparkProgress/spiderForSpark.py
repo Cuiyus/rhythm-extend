@@ -31,6 +31,8 @@ class sparkProgress(object):
     def reflashAppDict(self, data):
         self.appDict.clear()
         self.appDict.union(data)
+        print("appinfo:", data)
+        print("appdict:", self.appDict)
 
 
     def getAppID_Port(self):
@@ -58,8 +60,7 @@ class sparkProgress(object):
                 t2 = int(time.time() * 1000)
                 print("获取appDict的时间：{}".format((t2 - t1)))
                 self.reflashAppDict(appinfo)
-                print("appinfo:",appinfo)
-                print("appdict:",self.appDict)
+
 
     def getProgress(self, app):
         # 使用了爬虫解析4040的spark页面
