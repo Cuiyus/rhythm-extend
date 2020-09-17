@@ -28,15 +28,20 @@ class sparkProgress(object):
         # 用于存储spark的任务进度等信息,["application_1599144170737_0039", 0.06666666666666667, "spark"]
         self.priority = []
 
+    def reflashAppDict(self, data):
+        self.appDict.clear()
+        self.appDict.union(data)
+
+
     def getAppID_Port(self):
         while True:
-            self.appDict = set()
             t1 = int(time.time() * 1000)
             cmd = ["docker", "exec", "-i", "Spark-1", "yarn", "application", "-list"]
             yarninfo = subprocess.run(cmd, stdout=subprocess.PIPE,stderr=subprocess.DEVNULL)
             info = yarninfo.stdout.decode('utf-8').split('\n')
             if len(info) > 2:
                 data = info[2:]
+                appinfo = set()
                 for d in data:
                     appnamePat = re.compile(r"application_\d{13}_\d{4}")
                     appName = re.findall(appnamePat, d)
@@ -46,11 +51,12 @@ class sparkProgress(object):
                     try:
                         if len(appName) != 0 and len(appPort) != 0:
                             # self.appDict[appId[0]] = appPort[0]
-                            self.appDict.add((appName[0], appPort[0]))
+                            appinfo.add((appName[0], appPort[0]))
                     finally:
-                        t2 = int(time.time() * 1000)
-                        print("获取appDict的时间：{}".format((t2 - t1)))
                         pass
+                self.reflashAppDict(appinfo)
+                t2 = int(time.time() * 1000)
+                print("获取appDict的时间：{}".format((t2 - t1)))
 
     def getProgress(self, app):
         # 使用了爬虫解析4040的spark页面
@@ -107,7 +113,6 @@ class sparkProgress(object):
 
     def Priority(self):
         while True:
-            self.priority = []
             t1 = int(time.time() * 1000)
             progress_thread = []
             for app in self.appDict:
