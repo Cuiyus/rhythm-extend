@@ -203,7 +203,7 @@ def getPriority():
         if pick_job[0] == "predict": kill_job = predict_appinfo.get(0)
         else:kill_job = unpredict_appinfo.get(0)
     else:
-        return "没有BE任务在运行"
+        print("没有BE任务在运行")
     all_info = {}
     all_info["predict"] = predict_appinfo
     all_info["unpredict"] = unpredict_appinfo

@@ -30,6 +30,7 @@ class sparkProgress(object):
 
     def getAppID_Port(self):
         while True:
+            t1 = int(time.time() * 1000)
             cmd = ["docker", "exec", "-i", "Spark-1", "yarn", "application", "-list"]
             yarninfo = subprocess.run(cmd, stdout=subprocess.PIPE,stderr=subprocess.DEVNULL)
             info = yarninfo.stdout.decode('utf-8').split('\n')
@@ -46,21 +47,9 @@ class sparkProgress(object):
                             # self.appDict[appId[0]] = appPort[0]
                             self.appDict.add((appName[0], appPort[0]))
                     finally:
+                        t2 = int(time.time() * 1000)
+                        print("获取appDict的时间：{}".format((t2 - t1)))
                         pass
-
-    def getResponse(self, ip, port):
-        url = "http://{0}:{1}".format(ip, port)
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-            response.encoding = response.apparent_encoding
-        except requests.exceptions.HTTPError :
-            print("{} 任务未完成初始化".format(ip))
-            return None
-        except requests.exceptions.ConnectionError:
-            print("连接错误{}".format(url))
-            return None
-        return response
 
     def getProgress(self, app):
         # 使用了爬虫解析4040的spark页面
@@ -116,15 +105,19 @@ class sparkProgress(object):
         return progress
 
     def Priority(self):
-        self.priority = []
-        progress_thread = []
-        for app in self.appDict:
-            t = threading.Thread(target=self.getProgress, args=(app,))
-            t.start()
-            progress_thread.append(t)
-        for t in progress_thread:
-            t.join()
-        self.priority.sort(key=lambda x: x[1], reverse=False)
+        while True:
+            self.priority = []
+            t1 = int(time.time() * 1000)
+            progress_thread = []
+            for app in self.appDict:
+                t = threading.Thread(target=self.getProgress, args=(app,))
+                t.start()
+                progress_thread.append(t)
+            for t in progress_thread:
+                t.join()
+            self.priority.sort(key=lambda x: x[1], reverse=False)
+            t2 = int(time.time() * 1000)
+            print("计算优先级的时间：{}".format((t2-t1)))
 
     def run(self):
         updateappDict = threading.Thread(target=self.getAppID_Port)
