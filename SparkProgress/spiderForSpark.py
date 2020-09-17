@@ -144,7 +144,6 @@ class sparkProgress(object):
                 progress_thread.append(t)
             for t in progress_thread:
                 t.join()
-            print(self.appProgress)
             self.reflashPriority()
             self.priority.sort(key=lambda x: x[1], reverse=False)
 
