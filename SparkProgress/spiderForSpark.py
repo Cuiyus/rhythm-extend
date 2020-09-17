@@ -30,9 +30,7 @@ class sparkProgress(object):
 
     def reflashAppDict(self, data):
         self.appDict.clear()
-        self.appDict.union(data)
-        print("appinfo:", data)
-        print("appdict:", self.appDict)
+        self.appDict = self.appDict.union(data)
 
 
     def getAppID_Port(self):
