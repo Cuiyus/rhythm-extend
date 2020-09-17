@@ -138,7 +138,7 @@ class sparkProgress(object):
         while True:
             progress_thread = []
             self.appProgress = []
-            for app in self.appDict:
+            for app in list(self.appDict):
                 t = threading.Thread(target=self.getProgress, args=(app,))
                 t.start()
                 progress_thread.append(t)
