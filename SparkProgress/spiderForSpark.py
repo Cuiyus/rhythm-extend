@@ -24,6 +24,7 @@ class sparkProgress(object):
     def __init__(self, ip):
         self.ip = ip
         self.appDict = set()
+        self.appProgress = []
 
         # 用于存储spark的任务进度等信息,["application_1599144170737_0039", 0.06666666666666667, "spark"]
         self.priority = []
@@ -42,6 +43,15 @@ class sparkProgress(object):
             self.appDict = self.appDict.union(data)
         finally:
             self.lock.release()
+
+    def reflashPriority(self):
+        try:
+            self.lock.acquire()
+            self.priority.clear()
+            self.priority = self.priority + self.appProgress
+        finally:
+            self.lock.release()
+
 
 
     def getAppID_Port(self):
@@ -121,18 +131,21 @@ class sparkProgress(object):
             print("The spark Job提交后未完成任务初始化，Total Task= 0")
             return None
 
-        self.priority.append([app[0], progress["progress"], "spark"])
+        self.appProgress.append([app[0], progress["progress"], "spark"])
         return progress
 
     def Priority(self):
         while True:
             progress_thread = []
+            self.appProgress = []
             for app in self.appDict:
                 t = threading.Thread(target=self.getProgress, args=(app,))
                 t.start()
                 progress_thread.append(t)
             for t in progress_thread:
                 t.join()
+            print(self.appProgress)
+            self.reflashPriority()
             self.priority.sort(key=lambda x: x[1], reverse=False)
 
 
