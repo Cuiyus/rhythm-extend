@@ -57,6 +57,8 @@ class sparkProgress(object):
                 self.reflashAppDict(appinfo)
                 t2 = int(time.time() * 1000)
                 print("获取appDict的时间：{}".format((t2 - t1)))
+                self.reflashAppDict(appinfo)
+                print(appinfo)
 
     def getProgress(self, app):
         # 使用了爬虫解析4040的spark页面
@@ -113,7 +115,6 @@ class sparkProgress(object):
 
     def Priority(self):
         while True:
-            t1 = int(time.time() * 1000)
             progress_thread = []
             for app in self.appDict:
                 t = threading.Thread(target=self.getProgress, args=(app,))
@@ -122,8 +123,7 @@ class sparkProgress(object):
             for t in progress_thread:
                 t.join()
             self.priority.sort(key=lambda x: x[1], reverse=False)
-            t2 = int(time.time() * 1000)
-            print("计算优先级的时间：{}".format((t2-t1)))
+
 
     def run(self):
         updateappDict = threading.Thread(target=self.getAppID_Port)
