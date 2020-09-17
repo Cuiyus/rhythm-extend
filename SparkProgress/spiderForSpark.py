@@ -30,12 +30,18 @@ class sparkProgress(object):
         self.lock = threading.RLock
 
     def reflashAppDict(self, data):
+        '''
+        如果不加锁的话
+        RuntimeError: Set changed size during iteration
+        :param data:
+        :return:
+        '''
         try:
             self.lock.acquire()
             self.appDict.clear()
             self.appDict = self.appDict.union(data)
         finally:
-            self.lock.acquire()
+            self.lock.release()
 
 
     def getAppID_Port(self):
