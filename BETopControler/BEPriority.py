@@ -22,25 +22,31 @@ cnn = cnnProgress()
 '''
 # SCIMARK
 from HpccProgress.SerTime import scimarkProgress, scimarkHandler, Observer, resource
-
 sci = scimarkProgress()
 sci.event_handler = scimarkHandler(sci.appDict)
 sci.observer = Observer()
-sci.run()
+def startHPCMonitor(sci):
+    sci.run()
+    print("Start HPCMonitor")
 
 # 启动Spark监控，每一秒更新一次spark的任务信息
 from SparkProgress.spiderForSpark import sparkProgress
 spark = sparkProgress("192.168.1.106")
-spark.run()
+def startSparkMonitor(spark):
+    spark.run()
+    print("Start SparkMonitor")
 
 # 启动AI监控，每一秒更新一次AI的任务信息
 from CnnBenchProgress.cnnProgress import cnnProgress
 cnn = cnnProgress()
-cnn.run()
+def startAIMonitor(cnn):
+    cnn.run()
+    print("Start CnnMonitor")
+
 
 # Killer
-from BETopControler.controlkiller import killer
-killer = killer()
+# from BETopControler.controlkiller import killer
+# killer = killer()
 
 def MultiQueue(priority, flag):
     '''
@@ -117,6 +123,19 @@ def getHpccPriority(hpcc):
     unpredict.sort(key=lambda x:x[1], reverse=False)
     return sciAppdict, unpredict
 
+import threading
+def init():
+    threads = []
+    sparkmonitor_thread = threading.Thread(target=startSparkMonitor, args=(spark,))
+    sparkmonitor_thread.start()
+    aimonitor_thread = threading.Thread(target=startAIMonitor,args=(cnn,))
+    aimonitor_thread.start()
+    hpcmonitor_thread = threading.Thread(target=startHPCMonitor, args=(sci,))
+    hpcmonitor_thread.start()
+
+    threads.extend([sparkmonitor_thread, aimonitor_thread, hpcmonitor_thread])
+    for t in threads:
+        t.join()
 
 
 from flask import Flask, jsonify
@@ -212,4 +231,5 @@ def getPriority():
 
 if __name__ == '__main__':
     print("Flask启动")
+    init()
     app.run(host="0.0.0.0", port=10089)
