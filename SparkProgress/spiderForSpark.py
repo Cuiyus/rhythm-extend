@@ -4,8 +4,7 @@ import subprocess
 from multiprocessing import Pool, process
 import threading
 from bs4 import BeautifulSoup
-
-
+from copy import deepcopy
 '''
 刻画不同spark的工作进度
 已实现功能：
@@ -20,11 +19,22 @@ from bs4 import BeautifulSoup
     在 def getAppID_Port()函数中我们通过yarn application获取运行中的spark任务
     因此不需要在设置线程去实时监控更新活跃的spark任务 
 '''
+class Mythread(threading):
+    pass
+
+
+
 class sparkProgress(object):
     def __init__(self, ip):
+        # sparkui and rest IP
         self.ip = ip
+        # sparkRestPort
+        self.restport = 18080
         self.appDict = set()
         self.appProgress = []
+        # spark aApplication Executor
+        self.app_Executor = {}
+        self.app_Executor_temp = {}
 
         # 用于存储spark的任务进度等信息,["application_1599144170737_0039", 0.06666666666666667, "spark"]
         self.priority = []
@@ -52,6 +62,10 @@ class sparkProgress(object):
         finally:
             self.lock.release()
 
+    def reflashAppExecutor(self):
+        self.app_Executor.clear()
+        self.app_Executor.update(self.app_Executor_temp)
+
 
 
     def getAppID_Port(self):
@@ -75,7 +89,6 @@ class sparkProgress(object):
                     finally:
                         pass
                 self.reflashAppDict(appinfo)
-
 
     def getProgress(self, app):
         # 使用了爬虫解析4040的spark页面
@@ -144,14 +157,6 @@ class sparkProgress(object):
             self.priority.sort(key=lambda x: x[1], reverse=False)
 
 
-    def run(self):
-        updateappDict = threading.Thread(target=self.getAppID_Port)
-        updateappDict.start()
-        priority = threading.Thread(target=self.Priority)
-        priority.start()
-
-
-
     # getStageID，getRunningTask，getCoarseGrainedExecutorPort 都是针对单个spark application的类方法
 
     def getStageID(self, app, port=18080):
@@ -213,23 +218,48 @@ class sparkProgress(object):
 
         return runningtaskdata
 
-    def getCoarseGrainedExecutorPort(self):
-        url = "http://{0}:{1}/api/v1/applications/{2}/executors/".format(self.ip, self.port, self.jobinfo[0])
+    def getAppCoarseGrainedExecutorPort(self, app):
+        url = "http://{0}:{1}/api/v1/applications/{2}/executors/".format(self.ip, self.restport, app[0])
+        executorDict = []
         try:
             response = requests.get(url)
             response.raise_for_status()
             response.encoding = response.apparent_encoding
         except requests.exceptions.HTTPError:
-            print("{} 任务未完成初始化".format(self.jobinfo[0]))
+            print("{} 任务未完成初始化".format(self.app[0]))
             return None
         # Spark Application Driver
         driver = response.json()[0]
         executor = response.json()[1:]
         for exe in executor:
-            address, port = exe["hostPort"].split(":")
-            self.executor_dict[address] = port
+            nodetype, port = exe["hostPort"].split(":")
+            executorDict.append([nodetype, port])
+        try:
+            self.lock.acquire()
+            self.app_Executor_temp[app[0]] = executorDict
+        finally:
+            self.lock.release()
 
+    def getAllExecutor(self):
+        while True:
+            # 有问题
+            self.app_Executor_temp = {}
+            progress_thread = []
+            for app in list(self.appDict):
+                t = threading.Thread(target=self.getAppCoarseGrainedExecutorPort, args=(app,))
+                t.start()
+                progress_thread.append(t)
+            for t in progress_thread:
+                t.join()
+            self.reflashAppExecutor()
 
+    def run(self):
+        updateappDict = threading.Thread(target=self.getAppID_Port)
+        updateappDict.start()
+        priority = threading.Thread(target=self.Priority)
+        priority.start()
+        updateappExecutor = threading.Thread(target=self.getAllExecutor())
+        updateappExecutor.start()
 
 
 
