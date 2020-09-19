@@ -230,6 +230,6 @@ def getPriority():
     return jsonify(all_info)
 
 if __name__ == '__main__':
-    print("Flask启动")
     init()
     app.run(host="0.0.0.0", port=10089)
+    print("Flask启动")

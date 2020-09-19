@@ -254,8 +254,8 @@ class sparkProgress(object):
         updateappDict.start()
         priority = threading.Thread(target=self.Priority)
         priority.start()
-        # updateappExecutor = threading.Thread(target=self.getAllExecutor())
-        # updateappExecutor.start()
+        updateappExecutor = threading.Thread(target=self.getAllExecutor)
+        updateappExecutor.start()
 
 
 
