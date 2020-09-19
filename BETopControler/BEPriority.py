@@ -145,6 +145,7 @@ def getSparkJob():
     sparkDict = {}
     for i, app in enumerate(spark.appDict):
         sparkDict[i] = app[0]
+        sparkDict.update(spark.app_Executor)
         return jsonify(sparkDict)
 
 @app.route('/getAIJob',methods=["GET"])
