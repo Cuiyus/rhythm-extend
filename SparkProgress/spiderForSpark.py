@@ -19,10 +19,6 @@ from copy import deepcopy
     在 def getAppID_Port()函数中我们通过yarn application获取运行中的spark任务
     因此不需要在设置线程去实时监控更新活跃的spark任务 
 '''
-class Mythread(threading):
-    pass
-
-
 
 class sparkProgress(object):
     def __init__(self, ip):
