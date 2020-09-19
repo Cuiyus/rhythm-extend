@@ -146,9 +146,8 @@ app = Flask(__name__)
 @app.route('/getSparkJob',methods=["GET"])
 def getSparkJob():
     sparkDict = {}
-    for i, app in enumerate(spark.appDict):
-        sparkDict[i] = app[0]
-        return jsonify(spark.app_Executor)
+    for i, app in enumerate(spark.appDict):sparkDict[i] = app
+    return jsonify(spark.app_Executor)
 
 @app.route('/getAIJob',methods=["GET"])
 def getAIJob():
