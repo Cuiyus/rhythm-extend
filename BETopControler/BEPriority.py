@@ -145,8 +145,7 @@ def getSparkJob():
     sparkDict = {}
     for i, app in enumerate(spark.appDict):
         sparkDict[i] = app[0]
-        sparkDict.update(spark.app_Executor)
-        return jsonify(sparkDict)
+        return jsonify(spark.app_Executor)
 
 @app.route('/getAIJob',methods=["GET"])
 def getAIJob():
@@ -233,5 +232,5 @@ def getPriority():
 
 if __name__ == '__main__':
     init()
-    app.run(host="0.0.0.0", port=10089)
     print("Flask启动")
+    app.run(host="0.0.0.0", port=10089)
