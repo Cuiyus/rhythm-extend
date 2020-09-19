@@ -93,12 +93,15 @@ def pickJob(unp,p):
         return ['predict',anw]
     else:
         if unp[0][1] > p[0][1]:
+            print(unp[0],p[0])
             anw = p[0]
             return ['predict', anw]
         elif unp[0][1] == p[0][1]:
+            print(unp[0], p[0])
             anw = p[0]
             return ['predict', anw]
         elif unp[0][1] < p[0][1]:
+            print(unp[0], p[0])
             anw = unp[0]
             return ['unpredict', anw]
 
