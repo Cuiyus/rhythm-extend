@@ -14,7 +14,7 @@ class SparkKiller(object):
         self.worker = worker
         self.node = None
         self.setNode(worker)
-        self.executorPid = self.getExecutorPid()
+        self.executorPid = None
 
         self.record = set()
 
@@ -23,6 +23,8 @@ class SparkKiller(object):
             print("传入worker错误，不存在名称为{}的spark Worker".format(self.worker))
         else:
             self.node = self.relative[worker]
+            print("查询节点{}是否存在executor".format(self.node))
+
 
     def getExecutorPid(self):
         executor = self.spark.app_Executor[self.job[0]]
@@ -32,18 +34,19 @@ class SparkKiller(object):
             if self.node is not exec[0]: continue
             else: nodeinfo = exec
         if nodeinfo:
-            print("{}节点存在运行的executor，对正在运行的LC造成了干扰")
+            print("{}节点存在运行的executor，对正在运行的LC造成了干扰".format(self.node))
             cmd = "docker exec -i {} lsof -i:{}".format(self.worker, nodeinfo[1])
             pidfinfo = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
             info = pidfinfo.stdout.decode('utf-8').split('\n')[-1]
             executorPidPat = re.compile(r'java (\d{3,5}) root')
             executorPid = executorPidPat.findall(info)[0]
         else:
-            print("{}节点不存在运行的executor")
+            print("{}节点不存在运行的executor".format(self.node))
             return None
         if not executorPid:
             print("获取Exectuor pid失败")
             return None
+        self.executorPid =executorPid
         return executorPid
 
     def killExecutor(self):
