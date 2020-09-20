@@ -45,7 +45,7 @@ class SparkKiller(object):
             pidfinfo = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
             info = pidfinfo.stdout.decode('utf-8').split('\n')[-2]
             print("---------info", info)
-            executorPidPat = re.compile(r'java (\d{3,5}) root')
+            executorPidPat = re.compile(r'java    (\d{3,5}) root')
             executorPid = executorPidPat.findall(info)[0]
         else:
             print("{}节点不存在运行的executor".format(self.node))
