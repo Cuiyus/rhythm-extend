@@ -43,7 +43,7 @@ class SparkKiller(object):
             cmd = "docker exec -i {} lsof -i:{}".format(self.worker, nodeinfo[1])
             print(cmd)
             pidfinfo = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
-            info = pidfinfo.stdout.decode('utf-8').split('\n')[-1]
+            info = pidfinfo.stdout.decode('utf-8').split('\n')
             print("---------info", info)
             executorPidPat = re.compile(r'java (\d{3,5}) root')
             executorPid = executorPidPat.findall(info)[0]
