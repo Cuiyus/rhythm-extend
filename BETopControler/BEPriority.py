@@ -262,7 +262,7 @@ def runkill():
     if killjob[2] == "spark":
         killer = SparkKiller(spark=spark, job=killjob, worker=worker)
         info = {}
-        info["killerPID"] = killer.getExecutorPid()
+        # info["killerPID"] = killer.getExecutorPid()
         killer.killExecutor()
         print(killjob, info)
         return jsonify(info)
