@@ -32,8 +32,14 @@ class SparkKiller(object):
         nodeinfo = None
         # 假设要kill的节点为spark-1
         for exec in executor:
-            if self.node is not exec[0]: continue
-            else: nodeinfo = exec
+            print("1-1", self.node)
+            if self.node is not exec[0]:
+                print("1-2", self.exec[0])
+                continue
+            else:
+                print("1-3", self.exec[0])
+                nodeinfo = exec
+                print("1-4", nodeinfo)
         print('2', nodeinfo)
         print('3', self.worker)
         if nodeinfo:
