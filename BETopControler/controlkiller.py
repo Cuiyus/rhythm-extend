@@ -41,6 +41,7 @@ class SparkKiller(object):
             print("{}节点存在运行的executor，对正在运行的LC造成了干扰".format(self.node))
             print(nodeinfo)
             cmd = "docker exec -i {} lsof -i:{}".format(self.worker, nodeinfo[1])
+            print(cmd)
             pidfinfo = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
             info = pidfinfo.stdout.decode('utf-8').split('\n')[-1]
             print("---------info", info)
