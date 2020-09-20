@@ -258,8 +258,11 @@ def runkill():
     if not worker:
         return "没有指定被kill的BE节点"
     killjob = getAllPriority(sci, spark, cnn)
+    if not killjob: return "没有正在运行的BE"
     if killjob[2] == "spark":
         killer = SparkKiller(spark=spark, job=killjob, worker=worker)
+        info = {}
+        info["killerPID"] = killer.executorPid
         return killer.executorPid
 
 

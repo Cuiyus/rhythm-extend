@@ -12,10 +12,17 @@ class SparkKiller(object):
         }
         self.sparkcontroler = "Spark-1"
         self.worker = worker
-        self.node = self.relative[worker]
+        self.node = None
+        self.setNode(worker)
         self.executorPid = self.getExecutorPid()
 
         self.record = set()
+
+    def setNode(self, worker):
+        if self.worker not in self.relative.keys():
+            print("传入worker错误，不存在名称为{}的spark Worker".format(self.worker))
+        else:
+            self.node = self.relative[worker]
 
     def getExecutorPid(self):
         executor = self.spark.app_Executor[self.job[0]]
