@@ -25,7 +25,6 @@ class SparkKiller(object):
             self.node = self.relative[worker]
             print("查询节点{}是否存在executor".format(self.node))
 
-
     def getExecutorPid(self):
         executor = self.spark.app_Executor[self.job[0]]
         print('1', executor, self.node)
@@ -34,10 +33,10 @@ class SparkKiller(object):
         for exec in executor:
             print("1-1", self.node)
             if self.node is not exec[0]:
-                print("1-2", self.exec[0])
+                print("1-2", exec[0])
                 continue
             else:
-                print("1-3", self.exec[0])
+                print("1-3", exec[0])
                 nodeinfo = exec
                 print("1-4", nodeinfo)
         print('2', nodeinfo)
@@ -71,19 +70,6 @@ class SparkKiller(object):
         killInfo = killinfo.stdout.decode('utf-8').split('\n')
         print(killInfo)
 
-        
-
-
-
-
-
-
-
-
-
-
-
-
 
 class killer(object):
     def __init__(self, jobinfo, worker, app):
@@ -94,8 +80,6 @@ class killer(object):
         self.spark = None
         self.ai = None
         self.sci = None
-
-
 
     def chooseKiller(self):
         if self.job_info[2] == "spark":
@@ -110,9 +94,6 @@ class killer(object):
         for exec in executor:
             if exec[0] == "master":
                 pass
-
-
-
         pass
 
     def aiKill(self):
@@ -140,8 +121,6 @@ class killer(object):
             print("kill sci", self.job_info)
             cmd = "docker exec -i Scimark kill -9 {}".format(self.job_info[0])
             subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
-
-
 
 if __name__ == '__main__':
     k = killer()
