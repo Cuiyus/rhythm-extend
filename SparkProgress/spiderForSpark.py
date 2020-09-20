@@ -222,7 +222,7 @@ class sparkProgress(object):
             response.raise_for_status()
             response.encoding = response.apparent_encoding
         except requests.exceptions.HTTPError:
-            print("{} 任务未完成初始化".format(self.app[0]))
+            print("{} 任务未完成初始化".format(app[0]))
             return None
         # Spark Application Driver
         driver = response.json()[0]

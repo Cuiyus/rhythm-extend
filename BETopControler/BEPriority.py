@@ -43,11 +43,6 @@ def startAIMonitor(cnn):
     cnn.run()
     print("Start CnnMonitor")
 
-
-# Killer
-# from BETopControler.controlkiller import killer
-# killer = killer()
-
 def MultiQueue(priority, flag):
     '''
     :param priority:
@@ -141,7 +136,7 @@ def init():
         t.join()
 
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 app = Flask(__name__)
 @app.route('/getSparkJob',methods=["GET"])
 def getSparkJob():
@@ -231,6 +226,36 @@ def getPriority():
     all_info["unpredict"] = unpredict_appinfo
     all_info["kill"] = kill_job
     return jsonify(all_info)
+
+# Killer
+from BETopControler.controlkiller import killer
+# killer = killer()
+
+
+@app.route("/runkill",methods=["POST"])
+def runkill():
+    predict_appinfo = {}
+    unpredict_appinfo, unpredict_priority = getHpccPriority(sci)
+    # 获取存储有AI与spark不可预测任务信息的队列
+    predict_priority = spark.priority + cnn.priority
+    predict_priority.sort(key=lambda x: x[1], reverse=False)
+    for i, d in enumerate(predict_priority):
+        predict_appinfo[i] = d
+    pick_job = pickJob(unpredict_priority, predict_priority)
+    kill_job = None
+    if pick_job:
+        if pick_job[0] == "predict":
+            kill_job = predict_appinfo.get(0)
+        else:
+            kill_job = unpredict_appinfo.get(0)
+    else:
+        print("没有BE任务在运行")
+    worker = request.args.get("worker")
+    if not worker:
+        return "没有指定被kill的BE节点"
+    killer(app=spark, jobinfo=kill_job, worker=worker)
+    execPid = killer.chooseKiller()
+    return execPid
 
 if __name__ == '__main__':
     init()
