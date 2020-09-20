@@ -232,7 +232,7 @@ from BETopControler.controlkiller import killer
 # killer = killer()
 
 
-@app.route("/runkill",methods=["GET"])
+@app.route("/runkill",methods=["POST"])
 def runkill():
     predict_appinfo = {}
     unpredict_appinfo, unpredict_priority = getHpccPriority(sci)
