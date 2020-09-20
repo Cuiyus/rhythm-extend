@@ -263,7 +263,8 @@ def runkill():
         killer = SparkKiller(spark=spark, job=killjob, worker=worker)
         info = {}
         info["killerPID"] = killer.executorPid
-        return killer.executorPid
+        print(killjob, info)
+        return info
 
 
 
