@@ -15,6 +15,7 @@ class SparkKiller(object):
         self.node = None
         self.setNode(worker)
         self.executorPid = None
+        self.getExecutorPid()
 
         self.record = set()
 
@@ -39,12 +40,9 @@ class SparkKiller(object):
 
         if nodeinfo:
             print("{}节点存在运行的executor，对正在运行的LC造成了干扰".format(self.node))
-            print(nodeinfo)
             cmd = "docker exec -i {} lsof -i:{}".format(self.worker, nodeinfo[1])
-            print(cmd)
             pidfinfo = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
             info = pidfinfo.stdout.decode('utf-8').split('\n')[-2]
-            print("---------info", info)
             executorPidPat = re.compile(r'java    (\d{3,5}) root')
             executorPid = executorPidPat.findall(info)[0]
         else:
