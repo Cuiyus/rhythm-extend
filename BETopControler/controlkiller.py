@@ -28,19 +28,20 @@ class SparkKiller(object):
 
     def getExecutorPid(self):
         executor = self.spark.app_Executor[self.job[0]]
-        print(executor)
+        print('1', executor, self.node)
         nodeinfo = None
         # 假设要kill的节点为spark-1
         for exec in executor:
             if self.node is not exec[0]: continue
             else: nodeinfo = exec
-        print(nodeinfo)
+        print('2', nodeinfo)
+        print('3', self.worker)
         if nodeinfo:
             print("{}节点存在运行的executor，对正在运行的LC造成了干扰".format(self.node))
             cmd = "docker exec -i {} lsof -i:{}".format(self.worker, nodeinfo[1])
             pidfinfo = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
             info = pidfinfo.stdout.decode('utf-8').split('\n')[-1]
-            print(info)
+            print(4, info)
             executorPidPat = re.compile(r'java (\d{3,5}) root')
             executorPid = executorPidPat.findall(info)[0]
         else:

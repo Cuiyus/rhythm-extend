@@ -228,8 +228,12 @@ class sparkProgress(object):
         driver = response.json()[0]
         executor = response.json()[1:]
         for exe in executor:
-            nodetype, port = exe["hostPort"].split(":")
-            executorDict.append([nodetype, port])
+            try:
+                nodetype, port = exe["hostPort"].split(":")
+                executorDict.append([nodetype, port])
+            except ValueError as err:
+                print(err)
+                print(exe["hostPort"])
         try:
             self.lock.acquire()
             self.app_Executor_temp[app[0]] = executorDict
