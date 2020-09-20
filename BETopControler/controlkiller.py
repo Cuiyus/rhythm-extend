@@ -28,6 +28,7 @@ class SparkKiller(object):
 
     def getExecutorPid(self):
         executor = self.spark.app_Executor[self.job[0]]
+        print(executor)
         nodeinfo = None
         # 假设要kill的节点为spark-1
         for exec in executor:
