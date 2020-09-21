@@ -65,6 +65,25 @@ class SparkKiller(object):
         killInfo = killinfo.stdout.decode('utf-8').split('\n')
         print(killInfo)
 
+class AiKiller(object):
+    def __init__(self, job):
+        self.job_info = job
+    def killsyncJob(self):
+        print("kill AI", self.job_info)
+        cmd = "bash /home/tank/cys/rhythm/BE/cnn-bench/CnnBenchProgress/scripts/killcnnJob.sh {}".format(
+            self.job_info[0])
+        killinfo = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
+        killInfo = killinfo.stdout.decode('utf-8').split('\n')
+        print(killInfo)
+
+class HpcKiller(object):
+    def __init__(self, job):
+        self.job_info = job
+
+    def killScimark(self):
+        print("kill sci", self.job_info)
+        cmd = "docker exec -i Scimark kill -9 {}".format(self.job_info[0])
+        subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
 
 class killer(object):
     def __init__(self, jobinfo, worker, app):

@@ -2,24 +2,7 @@
 import time
 import sys
 sys.path.append(r"/home/tank/cys/rhythm/BE/rhythm-extend")
-'''
-生成两个队列，可预测与不可预测
-可预测：AI与Spark
-不可预测：SCIMARK
 
-
-缺点：
-kill job 每次决策时间为2秒，其中spark任务获取优先级时间最长大概在1.5秒
-而三类任务的初始化
-sci.run()
-spark = sparkProgress("192.168.1.106")
-cnn = cnnProgress()
-共耗时10s，然后才能启动flask任务
-
-优化策略：
-1.对于三类任务的初始化，以及优先级队列获取修改为异步多线程
-2.对于yarn 任务的获取，使用yarn rest接口
-'''
 # SCIMARK
 from HpccProgress.SerTime import scimarkProgress, scimarkHandler, Observer, resource
 sci = scimarkProgress()
@@ -248,7 +231,7 @@ def getPriority():
     return jsonify(all_info)
 
 # Killer
-from BETopControler.controlkiller import SparkKiller
+from BETopControler.controlkiller import SparkKiller, AiKiller, HpcKiller
 
 
 
@@ -261,12 +244,16 @@ def runkill():
     if not killjob: return "没有正在运行的BE"
     if killjob[2] == "spark":
         killer = SparkKiller(spark=spark, job=killjob, worker=worker)
-        info = {}
-        # info["killerPID"] = killer.getExecutorPid()
         killer.killExecutor()
-        print(killjob, info)
-        return jsonify(info)
-
+        return "kill Spark Job {} Executor {} PID {}".format(killer.job[0], killer.node, killer.executorPid)
+    elif killjob[2] == "AI":
+        killer = AiKiller(job=killjob)
+        killer.killsyncJob()
+        return "kill Ai Job {}".format(killjob)
+    elif killjob[2] == "sci":
+        killer = HpcKiller(job=killjob)
+        killer.killScimark()
+        return "kill Hpc Job {}".format(killjob)
 
 
 if __name__ == '__main__':
