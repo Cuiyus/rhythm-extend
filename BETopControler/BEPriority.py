@@ -237,12 +237,12 @@ from BETopControler.controlkiller import SparkKiller, AiKiller, HpcKiller
 
 @app.route("/runkill",methods=["GET"])
 def runkill():
-    worker = request.args.get("worker")
-    if not worker:
-        return "没有指定被kill的BE节点"
     killjob = getAllPriority(sci, spark, cnn)
     if not killjob: return "没有正在运行的BE"
     if killjob[2] == "spark":
+        worker = request.args.get("worker")
+        if not worker:
+            return "没有指定被kill的BE节点"
         killer = SparkKiller(spark=spark, job=killjob, worker=worker)
         killer.killExecutor()
         return "kill Spark Job {} Executor {} PID {}".format(killer.job[0], killer.node, killer.executorPid)
