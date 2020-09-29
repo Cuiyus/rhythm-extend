@@ -1,4 +1,4 @@
-
+# coding=utf-8
 import time
 import sys
 sys.path.append(r"/home/tank/cys/rhythm/BE/rhythm-extend")

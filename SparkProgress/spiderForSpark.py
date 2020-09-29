@@ -62,8 +62,6 @@ class sparkProgress(object):
         self.app_Executor.clear()
         self.app_Executor.update(self.app_Executor_temp)
 
-
-
     def getAppID_Port(self):
         while True:
             cmd = ["docker", "exec", "-i", "Spark-1", "yarn", "application", "-list"]
@@ -140,7 +138,6 @@ class sparkProgress(object):
                 t.join()
             self.reflashPriority()
             self.priority.sort(key=lambda x: x[1], reverse=False)
-
 
     # getStageID，getRunningTask，getCoarseGrainedExecutorPort 都是针对单个spark application的类方法
 
