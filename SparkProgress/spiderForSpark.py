@@ -104,10 +104,13 @@ class sparkProgress(object):
         progress = {}
         running_job, compile_job, total_job = 0, 0, 0
         soup = BeautifulSoup(res.text.encode("utf-8"), 'lxml')
-        activateJobInfo = soup.find("table", attrs={'id': "activeJob-table"}). \
-            select('span[style="text-align:center; position:absolute; width:100%; left:0;"]')
-        completedJobInfo = soup.find("table", attrs={'id': "completedJob-table"}). \
-            select('span[style="text-align:center; position:absolute; width:100%; left:0;"]')
+        try:
+            activateJobInfo = soup.find("table", attrs={'id': "activeJob-table"}). \
+                select('span[style="text-align:center; position:absolute; width:100%; left:0;"]')
+            completedJobInfo = soup.find("table", attrs={'id': "completedJob-table"}). \
+                select('span[style="text-align:center; position:absolute; width:100%; left:0;"]')
+        except AttributeError as err:
+            print("completedJobInfo 未获取",err)
 
         task_pat = re.compile(r'(\d{1,3})/(\d{1,3})')
         runningJobTaskInfo = task_pat.findall(activateJobInfo[0].string)[0]
