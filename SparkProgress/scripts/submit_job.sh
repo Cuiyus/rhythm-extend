@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+22#!/usr/bin/env bash
 # 放到容器Spark-1（master）节点的目录下 /root/spark-bench-legacy/bin
 DIR=`dirname "$0"`
 DIR=`cd "${DIR}/.."; pwd`
