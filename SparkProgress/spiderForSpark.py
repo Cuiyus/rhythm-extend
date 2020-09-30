@@ -112,19 +112,17 @@ class sparkProgress(object):
             task_pat = re.compile(r'(\d{1,3})/(\d{1,3})')
             runningJobTaskInfo = task_pat.findall(activateJobInfo[0].string)[0]
             completedJobTaskInfo = task_pat.findall(completedJobInfo[0].string)
+            for _ in completedJobTaskInfo:
+                total_job += int(_[0])
+            # 已运行的Job所有Task之和
+            total_job += int(runningJobTaskInfo[1])
+            running_job = int(runningJobTaskInfo[0])
+            progress["progress"] = running_job / int(runningJobTaskInfo[1])
         except AttributeError as err:
             print("completedJobInfo 未获取",err)
-        for _ in completedJobTaskInfo:
-            total_job += int(_[0])
-        # 已运行的Job所有Task之和
-        total_job += int(runningJobTaskInfo[1])
-        running_job = int(runningJobTaskInfo[0])
-        try:
-            progress["progress"] = running_job / int(runningJobTaskInfo[1])
-        except ZeroDivisionError:
+        except ZeroDivisionError as err:
             print("The spark Job提交后未完成任务初始化，Total Task= 0")
             return None
-
         self.appProgress.append([app[0], progress["progress"], "spark"])
         return progress
 
