@@ -111,9 +111,9 @@ class sparkProgress(object):
                 select('span[style="text-align:center; position:absolute; width:100%; left:0;"]')
             task_pat = re.compile(r'(\d{1,3})/(\d{1,3})')
             runningJobTaskInfo = task_pat.findall(activateJobInfo[0].string)[0]
-            completedJobTaskInfo = task_pat.findall(completedJobInfo[0].string)
-            for _ in completedJobTaskInfo:
-                total_job += int(_[0])
+            # completedJobTaskInfo = task_pat.findall(completedJobInfo[0].string)
+            # for _ in completedJobTaskInfo:
+            #     total_job += int(_[0])
             # 已运行的Job所有Task之和
             total_job += int(runningJobTaskInfo[1])
             running_job = int(runningJobTaskInfo[0])
