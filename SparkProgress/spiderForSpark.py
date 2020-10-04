@@ -118,12 +118,13 @@ class sparkProgress(object):
             total_job += int(runningJobTaskInfo[1])
             running_job = int(runningJobTaskInfo[0])
             progress["progress"] = running_job / int(runningJobTaskInfo[1])
+            self.appProgress.append([app[0], progress["progress"], "spark"])
         except AttributeError as err:
             print("completedJobInfo 未获取",err)
         except ZeroDivisionError as err:
             print("The spark Job提交后未完成任务初始化，Total Task= 0")
             return None
-        self.appProgress.append([app[0], progress["progress"], "spark"])
+
         return progress
 
     def Priority(self):
