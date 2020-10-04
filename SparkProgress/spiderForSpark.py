@@ -107,10 +107,10 @@ class sparkProgress(object):
         try:
             activateJobInfo = soup.find("table", attrs={'id': "activeJob-table"}). \
                 select('span[style="text-align:center; position:absolute; width:100%; left:0;"]')
-            completedJobInfo = soup.find("table", attrs={'id': "completedJob-table"}). \
-                select('span[style="text-align:center; position:absolute; width:100%; left:0;"]')
             task_pat = re.compile(r'(\d{1,3})/(\d{1,3})')
             runningJobTaskInfo = task_pat.findall(activateJobInfo[0].string)[0]
+            # completedJobInfo = soup.find("table", attrs={'id': "completedJob-table"}). \
+            #     select('span[style="text-align:center; position:absolute; width:100%; left:0;"]')
             # completedJobTaskInfo = task_pat.findall(completedJobInfo[0].string)
             # for _ in completedJobTaskInfo:
             #     total_job += int(_[0])
