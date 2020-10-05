@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-sparkApp=(KMenas LogisticRegression)
+sparkApp=(KMeans LogisticRegression)
 function parity() {
     local random=$1
     if [ $[$random%2] -eq 0 ]
