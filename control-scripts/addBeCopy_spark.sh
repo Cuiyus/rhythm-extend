@@ -10,8 +10,5 @@ function parity() {
     fi
 
 }
-function test() {
-    echo $1
-}
 parity $RANDOM
 bash /root/spark-bench-legacy/bin/submit_job.sh ${sparkApp[$?]}
