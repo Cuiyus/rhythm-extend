@@ -5,3 +5,4 @@
 java -jar /root/UpdateScimark2.0.jar 2 >> /dev/null &
 starttime=$(date +%s%3N)
 echo  "$! $starttime" >> /share/sci.log
+wait

@@ -19,13 +19,13 @@ then
     echo "PS has exited"
 else
     echo "Start PS"
-   CUDA_VISIBLE_DEVICES=-1 python /root/benchmarks-master/scripts/tf_cnn_benchmarks/tf_cnn_benchmarks.py --data_format=NHWC --batch_size=32 --model=resnet20 --print_training_accuracy=True --num_batches=$step --job_name=ps --ps_hosts=$ps:$port --worker_hosts=$worker1:$port,$worker2:$port --task_index=0  --cross_replica_sync=False --data_name=cifar10 --data_dir=/root/cifar-10-batches-py >> /dev/null 2>&1 &
+    docker exec -e CUDA_VISIBLE_DEVICES=-1 -i Tensor-PS python /root/benchmarks-master/scripts/tf_cnn_benchmarks/tf_cnn_benchmarks.py --data_format=NHWC --batch_size=32 --model=resnet20 --print_training_accuracy=True --num_batches=$step --job_name=ps --ps_hosts=$ps:$port --worker_hosts=$worker1:$port,$worker2:$port --task_index=0  --cross_replica_sync=False --data_name=cifar10 --data_dir=/root/cifar-10-batches-py >> /dev/null 2>&1 &
 fi
 
 echo "Start Work-1"
-CUDA_VISIBLE_DEVICES=-1  python /root/benchmarks-master/scripts/tf_cnn_benchmarks/tf_cnn_benchmarks.py --data_format=NHWC --batch_size=32 --model=resnet20 --print_training_accuracy=True --num_batches=$step --job_name=worker --ps_hosts=$ps:$port --worker_hosts=$worker1:$port,$worker2:$port --task_index=0 --cross_replica_sync=False --data_name=cifar10 --data_dir=/root/cifar-10-batches-py >> /dev/null 2>&1 &
+docker exec -e CUDA_VISIBLE_DEVICES=-1 -i Tensor-Worker-1 python /root/benchmarks-master/scripts/tf_cnn_benchmarks/tf_cnn_benchmarks.py --data_format=NHWC --batch_size=32 --model=resnet20 --print_training_accuracy=True --num_batches=$step --job_name=worker --ps_hosts=$ps:$port --worker_hosts=$worker1:$port,$worker2:$port --task_index=0 --cross_replica_sync=False --data_name=cifar10 --data_dir=/root/cifar-10-batches-py >> /dev/null 2>&1 &
 echo "Start Work-2"
-CUDA_VISIBLE_DEVICES=-1  python /root/benchmarks-master/scripts/tf_cnn_benchmarks/tf_cnn_benchmarks.py --data_format=NHWC --batch_size=32 --model=resnet20 --print_training_accuracy=True --num_batches=$step --job_name=worker --ps_hosts=$ps:$port --worker_hosts=$worker1:$port,$worker2:$port --task_index=1 --cross_replica_sync=False --data_name=cifar10 --data_dir=/root/cifar-10-batches-py >> /dev/null 2>&1 &
+docker exec -e CUDA_VISIBLE_DEVICES=-1 -i Tensor-Worker-2 python /root/benchmarks-master/scripts/tf_cnn_benchmarks/tf_cnn_benchmarks.py --data_format=NHWC --batch_size=32 --model=resnet20 --print_training_accuracy=True --num_batches=$step --job_name=worker --ps_hosts=$ps:$port --worker_hosts=$worker1:$port,$worker2:$port --task_index=1 --cross_replica_sync=False --data_name=cifar10 --data_dir=/root/cifar-10-batches-py >> /dev/null 2>&1 &
 echo "Running"
 sleep 3
 echo "开始获取训练任务步数以及Loss值"
