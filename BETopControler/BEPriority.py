@@ -101,7 +101,7 @@ def getHpccPriority(hpcc):
         unpredict.append([pid, sertime * cpunum, "sci"])
     maxSertime = max(sciAppdict.items(), key=lambda x: x[1][1])[1][1]
     for app in unpredict: app[1] = app[1] / maxSertime
-    unpredict.sort(key=lambda x:x[1], reverse=True)
+    unpredict.sort(key=lambda x:x[1], reverse=False)
     return sciAppdict, unpredict
 
 def getAllPriority(sci, spark, cnn):
@@ -221,7 +221,7 @@ def getPriority():
     kill_job = None
     if pick_job:
         if pick_job[0] == "predict": kill_job = predict_appinfo.get(0)
-        else:kill_job = unpredict_appinfo.get(0)
+        else:kill_job = unpredict_priority.get(0)
     else:
         print("没有BE任务在运行")
     all_info = {}
