@@ -101,7 +101,7 @@ def getHpccPriority(hpcc):
         unpredict.append([pid, sertime * cpunum, "sci"])
     maxSertime = max(sciAppdict.items(), key=lambda x: x[1][1])[1][1]
     for app in unpredict: app[1] = app[1] / maxSertime
-    unpredict.sort(key=lambda x:x[1], reverse=False)
+    unpredict.sort(key=lambda x:x[1], reverse=True)
     return sciAppdict, unpredict
 
 def getAllPriority(sci, spark, cnn):
