@@ -118,7 +118,7 @@ def getAllPriority(sci, spark, cnn):
         if pick_job[0] == "predict":
             kill_job = predict_appinfo.get(0)
         else:
-            kill_job = unpredict_appinfo.get(0)
+            kill_job = unpredict_priority[0]
     else:
         print("没有BE任务在运行")
     return kill_job
