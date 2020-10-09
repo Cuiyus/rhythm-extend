@@ -119,11 +119,12 @@ app = Flask(__name__)
 @app.route("/getPriority", methods=["GET"])
 def getPriority():
     cnn = cnnProgress()
-    cnn.Priority()
+    cnn.run()
     job_order = {}
     if cnn.priority:
         for i, app in enumerate(cnn.priority):
             job_order[i] = app
+            print(app)
     return jsonify(job_order)
 @app.route("/index", methods=["GET"])
 def index():
