@@ -54,7 +54,7 @@ class cnnProgress(object):
                     insPid = insPidPat.findall(d)
                     if len(insId) != 0 and len(insPid) != 0:
                         appinfo.add((insId[0], insPid[0]))
-            print(appinfo)
+            # print(appinfo)
             self.refreshAppDict(appinfo)
 
     def getProgress(self, app):
@@ -118,9 +118,8 @@ def stepPredict(func, data_path, loss):
 from flask import Flask, jsonify
 app = Flask(__name__)
 @app.route("/getPriority", methods=["GET"])
+
 def getPriority():
-    cnn = cnnProgress()
-    cnn.run()
     job_order = {}
     if cnn.priority:
         for i, app in enumerate(cnn.priority):
@@ -132,6 +131,9 @@ def index():
     return "启动成功"
 
 if __name__ == '__main__':
+    cnn = cnnProgress()
+    print("Start cnn Monitor")
+    cnn.run()
     app.run(host="0.0.0.0",port=10088)
 
 
