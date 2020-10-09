@@ -54,6 +54,7 @@ class cnnProgress(object):
                     insPid = insPidPat.findall(d)
                     if len(insId) != 0 and len(insPid) != 0:
                         appinfo.add((insId[0], insPid[0]))
+            print(appinfo)
             self.refreshAppDict(appinfo)
 
     def getProgress(self, app):
