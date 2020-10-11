@@ -2,8 +2,15 @@
 ps=172.28.0.5
 worker1=172.28.0.6
 worker2=172.28.0.7
-port=$1
-step=$2
+function rand(){
+    min=$1
+    max=$(($2-$min+1))
+    num=$(($RANDOM+1000000000)) #添加一个10位的数再求余
+    echo $(($num%$max+$min))
+}
+port=$(rand 10000 50000)
+step=20000
+
 DATADIR=/home/tank/cys/rhythm/BE/cnn-bench/CnnBenchProgress/cnn_appinfo
 
 ps_pid=0

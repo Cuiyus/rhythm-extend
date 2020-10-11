@@ -1,0 +1,36 @@
+version: "3"
+services:
+  solr-1:
+    image: cuiys/solr:v1
+    container_name: "Solr-1"
+    hostname: solr1
+    tty: true
+    networks:
+      cnn_net:
+        ipv4_address: 172.29.0.5
+    ports:
+      - "8983:18983"
+
+  solr-2:
+    image: cuiys/solr:v1
+    container_name: "Solr-2"
+    hostname: solr2
+    tty: true
+    networks:
+      cnn_net:
+        ipv4_address: 172.29.0.6
+
+  solr-3:
+    image: cuiys/solr:v1
+    container_name: "Solr-3"
+    hostname: solr3
+    tty: true
+    networks:
+      cnn_net:
+        ipv4_address: 172.29.0.7
+
+networks:
+  cnn_net:
+    ipam:
+      config:
+        - subnet: 172.29.0.0/16

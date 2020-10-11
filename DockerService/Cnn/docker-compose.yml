@@ -1,0 +1,36 @@
+version: "3"
+services:
+  ps:
+    image: mytensorflow:v2
+    container_name: "Tensor-PS"
+    hostname: ps
+    tty: true
+    networks:
+      cnn_net:
+        ipv4_address: 172.28.0.5
+
+  worker1:
+    image: mytensorflow:v2
+    container_name: Tensor-Worker-1
+    hostname: worker1
+    tty: true
+    volumes:
+      - /home/tank/cys/rhythm/BE/cnn-bench/CnnBenchProgress/cnn_appinfo:/share
+    networks:
+      cnn_net:
+        ipv4_address: 172.28.0.6
+
+  worker2:
+    image: mytensorflow:v2
+    container_name: Tensor-Worker-2
+    hostname: worker2
+    tty: true
+    networks:
+      cnn_net:
+        ipv4_address: 172.28.0.7
+
+networks:
+  cnn_net:
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

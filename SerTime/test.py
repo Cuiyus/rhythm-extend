@@ -1,19 +1,14 @@
-import requests
-class test(object):
-    def __init__(self):
-        self.ip = "192.168.1.106"
-        self.restport=18080
-    def exe(self, app):
-        url = "http://{0}:{1}/api/v1/applications/{2}/executors/".format(self.ip, self.restport, app)
-        executorDict = []
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-            response.encoding = response.apparent_encoding
-            return response.text
-        except requests.exceptions.HTTPError:
-            print("{} 任务未完成初始化 -- getAppCoarseGrainedExecutorPort".format(app))
-            return None
+from flask import Flask, jsonify, request
+import subprocess
+app = Flask(__name__)
 
-t = test()
-t.exe("application_1602044812944_0007")
+@app.route("/runcnn",methods=["GET"])
+def runcnn():
+    port = request.args.get("port")
+    step = request.args.get("step")
+    cmd= "bash /root/runcnn.sh {} {}".format(port, step)
+    print(cmd)
+    subprocess.run(cmd, shell=True)
+    return "Start cnn"
+if __name__ == '__main__':
+    app.run(host="0.0.0.0",port=22222)

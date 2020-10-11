@@ -95,12 +95,15 @@ def stepPredict(func, data_path, loss):
     :return: 精度计算公式中的a,b,c
     '''
     step_loss = []
-    with open(data_path, 'r') as f:
-        line = f.readline()
-        while line:
-            line = line.strip('\n')
-            step_loss.append(line.split("\t"))
+    try:
+        with open(data_path, 'r') as f:
             line = f.readline()
+            while line:
+                line = line.strip('\n')
+                step_loss.append(line.split("\t"))
+                line = f.readline()
+    except FileNotFoundError as err:
+        print("{} 文件还未生成，其对应的AI训练任务还处于提交或排队阶段")
     x = [int(d[0]) for d in step_loss]
     y = [float(d[1]) for d in step_loss]
     if len(x)==0 and len(y) ==0 :

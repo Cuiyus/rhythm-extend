@@ -30,6 +30,13 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="test107">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/tank/cys/test" local="$PROJECT_DIR$/SerTime" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
     </serverData>
   </component>
 </project>
