@@ -11,13 +11,6 @@ from copy import deepcopy
 1. 每两秒刻画运行时的spark任务进度，非触发式的
 2. 采集正在运行时的task启动时间,可用来计算kill操作的是loss
 3. 修改为web触发式函数
-还需实现：
--- 1. 控制操作为controlSpark.py 但未整合
-2. 没有获取读取检查点的开销
-代码缺陷：
-1. spark的活跃任务实际上不需要事实监控：
-    在 def getAppID_Port()函数中我们通过yarn application获取运行中的spark任务
-    因此不需要在设置线程去实时监控更新活跃的spark任务 
 '''
 
 class sparkProgress(object):
@@ -123,7 +116,7 @@ class sparkProgress(object):
             print("completedJobInfo 未获取",err)
         except ZeroDivisionError as err:
             print("The spark Job提交后未完成任务初始化，Total Task= 0")
-            return None
+            self.appProgress.append([app[0], 0.0, "spark"])
 
         return progress
 

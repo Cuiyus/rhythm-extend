@@ -60,6 +60,7 @@ class cnnProgress(object):
     def getProgress(self, app):
         path = "/home/tank/cys/rhythm/BE/cnn-bench/CnnBenchProgress/cnn_appinfo/{}.txt".format(app[0])
         totalStep, endstep, progress = stepPredict(optimusFunc, path, 0.22)
+        if progress is None: progress=0.0
         self.appProgress.append([app[0], progress, "AI"])
 
 
