@@ -11,3 +11,6 @@ for app in $applist; do
   echo "Delete Job $app"
   yarn application -kill $app
   done
+
+# Tensor-worker-1
+# parallel-ssh -h /root/hostskill -i bash /home/tank/killAll.sh
