@@ -1,33 +1,45 @@
 """有序启动混合类型BE"""
 import subprocess
 from flask import Flask, jsonify, request, Response
+from threading import Thread
 # 用生成器来实现
 
+def launchAi(step):
+    cmd = "docker exec -i Tensor-Worker-1 bash /home/tank/addBeCopy_cnn.sh {}".format(step)
+    subprocess.run(cmd, shell=True)
+
+def launchSpark(be):
+    cmd = "docker exec -i Spark-1 bash /root/spark-bench-legacy/bin/submit_job.sh {}".format(be)
+    subprocess.run(cmd, shell=True)
+
+def launchHpcc():
+    cmd = "docker exec -i Scimark-1 bash /home/tank/addBeCopy_cpu.sh  "
+    subprocess.run(cmd, shell=True)
+
+
 def launchBE(be):
-    cmd = ""
     if be == "AI":
         step = 1000
-        cmd = "docker exec -i Tensor-Worker-1 bash /home/tank/addBeCopy_cnn.sh {}".format(step)
-        subprocess.run(cmd, shell=True)
+        ai = Thread(target=launchAi, args=step)
+        ai.start()
         return "Start AI"
     elif be == "Kmeans":
-        cmd = "docker exec -i Spark-1 bash /root/spark-bench-legacy/submit_job.sh KMeans"
-        subprocess.run(cmd, shell=True)
+        kmeans = Thread(target=launchSpark, args=be)
+        kmeans.start()
         return "Start Kmeans"
     elif be == "LogisticRegression":
-        cmd = "docker exec -i Spark-1 bash /root/spark-bench-legacy/submit_job.sh LogisticRegression"
-        subprocess.run(cmd, shell=True)
+        lg = Thread(target=launchSpark, args=be)
+        lg.start()
         return "Start LogisticRegression"
     elif be == "Hpcc":
-        cmd = "docker exec -i Scimark-1 bash /home/tank/addBeCopy_cpu.sh  "
-        subprocess(cmd, shell=True)
+        hpcc = Thread(target=launchHpcc)
+        hpcc.start()
         return "Start Hpcc"
 
 def run(joblist):
     for i, be in enumerate(joblist):
         print(i)
         yield launchBE(be)
-
 
 app = Flask(__name__)
 @app.route("/launchmix", methods=["GET",])
