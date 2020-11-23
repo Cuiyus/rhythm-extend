@@ -20,15 +20,15 @@ def launchHpcc():
 def launchBE(be):
     if be == "AI":
         step = 1000
-        ai = Thread(target=launchAi, args=step)
+        ai = Thread(target=launchAi, args=(step,))
         ai.start()
         return "Start AI"
     elif be == "Kmeans":
-        kmeans = Thread(target=launchSpark, args=be)
+        kmeans = Thread(target=launchSpark, args=(be,))
         kmeans.start()
         return "Start Kmeans"
     elif be == "LogisticRegression":
-        lg = Thread(target=launchSpark, args=be)
+        lg = Thread(target=launchSpark, args=(be,))
         lg.start()
         return "Start LogisticRegression"
     elif be == "Hpcc":
