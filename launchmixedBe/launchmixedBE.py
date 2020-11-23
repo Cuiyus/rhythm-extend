@@ -24,11 +24,11 @@ def launchBE(be):
         ai.start()
         return "Start AI"
     elif be == "Kmeans":
-        kmeans = Thread(target=launchSpark, args=(be,))
+        kmeans = Thread(target=launchSpark, args=("KMeans",))
         kmeans.start()
         return "Start Kmeans"
     elif be == "LogisticRegression":
-        lg = Thread(target=launchSpark, args=(be,))
+        lg = Thread(target=launchSpark, args=("LogisticRegression",))
         lg.start()
         return "Start LogisticRegression"
     elif be == "Hpcc":
