@@ -23,10 +23,10 @@ def launchBE(be):
         ai = Thread(target=launchAi, args=(step,))
         ai.start()
         return "Start AI"
-    elif be == "Kmeans":
-        kmeans = Thread(target=launchSpark, args=("KMeans",))
+    elif be == "KMeans":
+        kmeans = Thread(target=launchSpark, args=(be,))
         kmeans.start()
-        return "Start Kmeans"
+        return "Start KMeans"
     elif be == "LogisticRegression":
         lg = Thread(target=launchSpark, args=("LogisticRegression",))
         lg.start()
@@ -50,9 +50,9 @@ def launchmix():
         return "没有后续任务待启动"
 
 if __name__ == '__main__':
-    BElist = ["AI", "Kmeans", "Hpcc",
+    BElist = ["AI", "KMeans", "Hpcc",
               "AI", "LogisticRegression", "Hpcc",
-              "AI", "Kmeans", "Hpcc", "Hpcc"]
+              "AI", "KMeans", "Hpcc", "Hpcc"]
     global loader
     loader = run(BElist)
     app.run(host="0.0.0.0", port=10081)
