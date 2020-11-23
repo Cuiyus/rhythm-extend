@@ -13,7 +13,7 @@ def launchSpark(be):
     subprocess.run(cmd, shell=True)
 
 def launchHpcc():
-    cmd = "docker exec -i Scimark-1 bash /home/tank/addBeCopy_cpu.sh  "
+    cmd = "docker exec -i Scimark bash /home/tank/addBeCopy_cpu.sh  "
     subprocess.run(cmd, shell=True)
 
 
