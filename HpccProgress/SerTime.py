@@ -80,11 +80,11 @@ class scimarkProgress(object):
 
     def monitorAppIsAlive(self):
         while True:
-            for pid in list(self.appDict):
-                if not self.appisAlive(pid):
+            for app in list(self.appDict):
+                if not self.appisAlive(app[0]):
                     self.lock.acquire()
                     try:
-                        self.appDict.discard(pid)
+                        self.appDict.discard(app)
                     finally:
                         self.lock.release()
 
@@ -127,12 +127,11 @@ def getSertime():
     '''
     sertimeInfo = {}
     # for pid in hpc_appdict:
-    for pid in sci.appDict:
+    for app in sci.appDict:
         localtime = int(time.time()*1000) # 毫秒
         cpunum = resource("Scimark")
-        sertime = (localtime - int(sci.appDict[pid][0])) / 1000
-        sci.appDict[pid].append([sertime, cpunum])
-        sertimeInfo[pid] = sertime * cpunum
+        sertime = (localtime - int(app[1])) / 1000
+        sertimeInfo[app[0]] = [app[1], sertime * cpunum]
     return jsonify(sertimeInfo)
 
 @app.route("/index", methods=["GET"])

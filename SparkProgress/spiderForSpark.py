@@ -89,7 +89,7 @@ class sparkProgress(object):
             res.raise_for_status()
             res.encoding = res.apparent_encoding
         except requests.exceptions.HTTPError:
-            print("{} 任务未完成初始化 -- getProgress".format(app[0]))
+            # print("{} 任务未完成初始化 -- getProgress".format(app[0]))
             return None
         except requests.exceptions.ConnectionError:
             print("任务：{} --- 连接错误".format(app[0]))
