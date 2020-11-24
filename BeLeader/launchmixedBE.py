@@ -21,8 +21,8 @@ def killBE():
     kill all BE
     :return:
     '''
-    cmd = "docker exec -i Tensor-Worker-1 bash /home/tank/killAll.sh & " \
-          "docker exec -i Spark-1 bash /home/tank/killAll.sh & " \
+    cmd = "docker exec -i Tensor-Worker-1 bash /home/tank/killAll.sh && " \
+          "docker exec -i Spark-1 bash /home/tank/killAll.sh && " \
           "docker exec -i Scimark bash /home/tank/killAll.sh"
     subprocess.run(cmd, shell=True)
 
