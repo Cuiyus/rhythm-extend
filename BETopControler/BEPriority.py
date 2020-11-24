@@ -202,8 +202,8 @@ def killer():
 
     return jsonify(all_info)
 
-@app.route('/getPriority', methods=["GET"])
-def getPriority():
+@app.route('/getActivaJob', methods=["GET"])
+def getActivaJob():
     '''
     返回一个json字符串：{kill: [appname,progress,apptype]}
     :return:
@@ -215,7 +215,7 @@ def getPriority():
     # 获取存储有AI与spark不可预测任务信息的队列
     predict_priority = spark.priority + cnn.priority
     predict_priority.sort(key=lambda x: x[1], reverse=False)
-    for i,d in enumerate(predict_priority):
+    for i, d in enumerate(predict_priority):
         predict_appinfo[i] = d
     pick_job = pickJob(unpredict_priority, predict_priority)
     kill_job = None
@@ -225,9 +225,9 @@ def getPriority():
     else:
         print("没有BE任务在运行")
     all_info = {}
-    all_info["predict"] = predict_appinfo
-    all_info["unpredict"] = unpredict_appinfo
-    all_info["kill"] = kill_job
+    all_info.update(predict_appinfo)
+    all_info.update(unpredict_appinfo)
+    all_info.update({"Num":len(all_info)})
     return jsonify(all_info)
 
 # Killer
