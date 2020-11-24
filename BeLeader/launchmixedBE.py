@@ -16,6 +16,15 @@ def launchHpcc():
     cmd = "docker exec -i Scimark bash /home/tank/addBeCopy_cpu.sh  "
     subprocess.run(cmd, shell=True)
 
+def killBE():
+    '''
+    kill all BE
+    :return:
+    '''
+    cmd = "docker exec -i Tensor-Worker-1 bash /home/tank/killAll.sh & " \
+          "docker exec -i Spark-1 bash /home/tank/killAll.sh & " \
+          "docker exec -i Scimark bash /home/tank/killAll.sh"
+    subprocess.run(cmd, shell=True)
 
 def launchBE(be):
     if be == "AI":
@@ -41,6 +50,8 @@ def run(joblist):
         print(i)
         yield launchBE(be)
 
+
+
 app = Flask(__name__)
 @app.route("/launchmix", methods=["GET",])
 def launchmix():
@@ -48,7 +59,14 @@ def launchmix():
         return next(loader)
     except StopIteration:
         return "没有后续任务待启动"
-
+@app.route("/killall", methods=["GET",])
+def killall():
+    k = Thread(target=killBE)
+    k.start()
+    return "Start Kill"
+@app.route("/getactivajob", methods=["GET",])
+def getActiveJob():
+    pass
 if __name__ == '__main__':
     BElist = ["AI", "KMeans", "Hpcc",
               "AI", "LogisticRegression", "Hpcc",
