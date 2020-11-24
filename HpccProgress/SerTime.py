@@ -38,7 +38,7 @@ class scimarkHandler(FileSystemEventHandler):
                 pid, startTime = info[0], info[1]
                 self.lock.acquire()
                 try:
-                    self.appdict[pid] = [startTime,]
+                    self.appdict.add((pid, startTime))
                 finally:
                     self.lock.release()
 
@@ -47,7 +47,7 @@ class scimarkHandler(FileSystemEventHandler):
 class scimarkProgress(object):
     def __init__(self):
         self.lock = threading.RLock()
-        self.appDict = {}
+        self.appDict = set()
         self.event_handler = None
         self.observer = None
         self.path = r"/home/tank/cys/rhythm/BE/scimark/SerTime/Scimark/scilog/sci.log"
@@ -84,7 +84,7 @@ class scimarkProgress(object):
                 if not self.appisAlive(pid):
                     self.lock.acquire()
                     try:
-                        del self.appDict[pid]
+                        self.appDict.discard(pid)
                     finally:
                         self.lock.release()
 
@@ -119,7 +119,6 @@ def resource(Container_name):
 
 from flask import Flask,jsonify
 app = Flask(__name__)
-
 
 @app.route("/getSertime", methods=["GET"])
 def getSertime():

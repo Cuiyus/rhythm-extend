@@ -104,7 +104,8 @@ def stepPredict(func, data_path, loss):
                 step_loss.append(line.split("\t"))
                 line = f.readline()
     except FileNotFoundError as err:
-        print("{} 文件还未生成，其对应的AI训练任务还处于提交或排队阶段")
+        # print("{} 文件还未生成，其对应的AI训练任务还处于提交或排队阶段")
+        pass
     x = [int(d[0]) for d in step_loss]
     y = [float(d[1]) for d in step_loss]
     if len(x)==0 and len(y) ==0 :

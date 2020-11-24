@@ -203,32 +203,11 @@ def killer():
     return jsonify(all_info)
 
 @app.route('/getActivaJob', methods=["GET"])
-def getActivaJob():
-    '''
-    返回一个json字符串：{kill: [appname,progress,apptype]}
-    :return:
-    '''
-    # 不同类型任务的priority=[appid,Sertime[/progress]]
-    # sci
-    predict_appinfo = {}
-    unpredict_appinfo, unpredict_priority = getHpccPriority(sci)
-    # 获取存储有AI与spark不可预测任务信息的队列
-    predict_priority = spark.priority + cnn.priority
-    predict_priority.sort(key=lambda x: x[1], reverse=False)
-    for i, d in enumerate(predict_priority):
-        predict_appinfo[i] = d
-    pick_job = pickJob(unpredict_priority, predict_priority)
-    kill_job = None
-    if pick_job:
-        if pick_job[0] == "predict": kill_job = predict_appinfo.get(0)
-        else:kill_job = unpredict_priority[0]
-    else:
-        print("没有BE任务在运行")
-    all_info = {}
-    all_info.update(predict_appinfo)
-    all_info.update(unpredict_appinfo)
-    all_info.update({"Num":len(all_info)})
-    return jsonify(all_info)
+def getActiveJob():
+    jobs = spark.appDict + cnn.appDict
+    sci.appDict
+
+
 
 # Killer
 from BETopControler.controlkiller import SparkKiller, AiKiller, HpcKiller
