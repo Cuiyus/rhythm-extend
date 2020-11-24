@@ -202,7 +202,7 @@ def killer():
 
     return jsonify(all_info)
 
-@app.route('/getActivaJob', methods=["GET"])
+@app.route('/getActiveJob', methods=["GET"])
 def getActiveJob():
     jobs = set()
     jobs.update(spark.appDict, sci.appDict, cnn.appDict)
