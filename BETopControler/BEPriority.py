@@ -206,6 +206,7 @@ def killer():
 def getActiveJob():
     jobs = set()
     jobs.update(spark.appDict, sci.appDict, cnn.appDict)
+    print(jobs)
     info = {"jobs":jobs, "Nums":len(jobs)}
     return jsonify(info)
 
