@@ -4,7 +4,7 @@ from flask import Flask, jsonify, request, Response
 from threading import Thread
 import time
 # 用生成器来实现
-file = r"/share/killlog.log"
+file = r"/home/tank/cys/rhythm/BE/beleader-img/leader-volume/killtime.log"
 
 def launchAi(step):
     cmd = "docker exec -i Tensor-Worker-1 bash /home/tank/addBeCopy_cnn.sh {}".format(step)
