@@ -2,7 +2,9 @@
 import subprocess
 from flask import Flask, jsonify, request, Response
 from threading import Thread
+import time
 # 用生成器来实现
+file = r"/share/killlog.log"
 
 def launchAi(step):
     cmd = "docker exec -i Tensor-Worker-1 bash /home/tank/addBeCopy_cnn.sh {}".format(step)
@@ -25,6 +27,9 @@ def killBE():
           "docker exec -i Spark-1 bash /home/tank/killAll.sh && " \
           "docker exec -i Scimark bash /home/tank/killAll.sh"
     subprocess.run(cmd, shell=True)
+    endtime = time.time()
+    with open(file, "w+") as f:
+        print(endtime, file=f)
 
 def launchBE(be):
     if be == "AI":
@@ -52,8 +57,6 @@ def run(joblist):
         yield launchBE(joblist[i])
         i=i+1
 
-
-
 app = Flask(__name__)
 @app.route("/launchmix", methods=["GET",])
 def launchmix():
@@ -66,6 +69,9 @@ def killall():
     k = Thread(target=killBE)
     k.start()
     return "Start Kill"
+@app.route("/killrandom", methods=["GET",])
+def killrandom():
+    pass
 @app.route("/getactivajob", methods=["GET",])
 def getActiveJob():
     pass
