@@ -46,9 +46,11 @@ def launchBE(be):
         return "Start Hpcc"
 
 def run(joblist):
-    for i, be in enumerate(joblist):
-        print(i)
-        yield launchBE(be)
+    i = 0
+    while True:
+        if i == len(joblist): i = 0
+        yield launchBE(joblist[i])
+        i=i+1
 
 
 
