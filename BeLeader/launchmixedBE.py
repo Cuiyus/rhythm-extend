@@ -51,14 +51,14 @@ def launchBE(be):
         return "Start Hpcc"
 
 def launch(joblist, type):
-    if type == "loop":
+    if type[0] == "loop":
         i = 0
         while True:
             if i == len(joblist): i = 0
             yield launchBE(joblist[i])
             i=i+1
-    elif type == "fix":
-        for i in range(6):
+    elif type[0] == "fix":
+        for i in range(type[1]):
             yield launchBE(joblist[i])
 
 app = Flask(__name__)
@@ -84,8 +84,11 @@ if __name__ == '__main__':
               "AI", "LogisticRegression", "Hpcc",
               "AI", "KMeans", "Hpcc", "Hpcc"]
     global loader
-    type = sys.argv[1]
+
+    if len(sys.argv) >=2 :
+        type, len = sys.argv[1], sys.argv[2]
     # type：loop type：fixed（6）
-    loader = launch(BElist, type)
+
+    loader = launch(BElist, [type, len])
     app.run(host="0.0.0.0", port=10081)
 
