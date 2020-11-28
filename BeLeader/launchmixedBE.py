@@ -86,9 +86,9 @@ if __name__ == '__main__':
     global loader
 
     if len(sys.argv) >=2 :
-        type, len = sys.argv[1], sys.argv[2]
+        type, len = sys.argv[1], int(sys.argv[2])
     # type：loop type：fixed（6）
 
-    loader = launch(BElist, [type, int(len)])
+    loader = launch(BElist, [type, len])
     app.run(host="0.0.0.0", port=10081)
 
