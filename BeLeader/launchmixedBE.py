@@ -2,7 +2,7 @@
 import subprocess
 from flask import Flask, jsonify, request, Response
 from threading import Thread
-import time
+import time, sys
 # 用生成器来实现
 file = r"/home/tank/cys/rhythm/BE/beleader-img/leader-volume/killtime.log"
 
@@ -50,12 +50,16 @@ def launchBE(be):
         hpcc.start()
         return "Start Hpcc"
 
-def run(joblist):
-    i = 0
-    while True:
-        if i == len(joblist): i = 0
-        yield launchBE(joblist[i])
-        i=i+1
+def launch(joblist, type):
+    if type == "loop":
+        i = 0
+        while True:
+            if i == len(joblist): i = 0
+            yield launchBE(joblist[i])
+            i=i+1
+    elif type == "fix":
+        for i in range(6):
+            yield launchBE(joblist[i])
 
 app = Flask(__name__)
 @app.route("/launchmix", methods=["GET",])
@@ -80,6 +84,8 @@ if __name__ == '__main__':
               "AI", "LogisticRegression", "Hpcc",
               "AI", "KMeans", "Hpcc", "Hpcc"]
     global loader
-    loader = run(BElist)
+    type = sys.argv[1]
+    # type：loop type：fixed（6）
+    loader = launch(BElist, type)
     app.run(host="0.0.0.0", port=10081)
 
