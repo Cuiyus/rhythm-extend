@@ -87,20 +87,20 @@ def randomPick(unp,p):
     if not unp and not p:
         return None
     elif unp and not p:
-        i = random.randint(0, len(unp))
+        i = random.randint(0, len(unp)-1)
         anw = unp[i]
         return ['unpredict',anw]
     elif not unp and p:
-        i = random.randint(0, len(p))
+        i = random.randint(0, len(p)-1)
         anw = p[i]
         return ['predict',anw]
     else:
         i = random.randint(0, 100)
         if (i/2)==0:#选择可预测队列
-            j = random.randint(0, len(p))
+            j = random.randint(0, len(p)-1)
             return ['predict', p[j]]
         else:
-            j = random.randint(0, len(unp))
+            j = random.randint(0, len(unp-1))
             return ['predict', unp[j]]
 
 def getHpccPriority(hpcc):
