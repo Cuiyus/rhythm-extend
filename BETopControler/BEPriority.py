@@ -93,12 +93,12 @@ def getHpccPriority(hpcc):
     sciAppdict = {}
     unpredict = []
     if not hpcc.appDict: return sciAppdict, unpredict
-    for i, pid in enumerate(list(hpcc.appDict)):
+    for i, pidinfo in enumerate(list(hpcc.appDict)):
         localtime = int(time.time() * 1000)  # 毫秒
         cpunum = resource("Scimark")
-        sertime = (localtime - int(hpcc.appDict[pid][0])) / 1000
-        sciAppdict[i] = [pid, sertime * cpunum, "sci"]
-        unpredict.append([pid, sertime * cpunum, "sci"])
+        sertime = (localtime - int(pidinfo[1])) / 1000
+        sciAppdict[i] = [pidinfo[0], sertime * cpunum, "sci"]
+        unpredict.append([pidinfo[0], sertime * cpunum, "sci"])
     maxSertime = max(sciAppdict.items(), key=lambda x: x[1][1])[1][1]
     for app in unpredict: app[1] = app[1] / maxSertime
     unpredict.sort(key=lambda x:x[1], reverse=False)
