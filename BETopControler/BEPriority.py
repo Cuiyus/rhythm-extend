@@ -1,6 +1,6 @@
 # coding=utf-8
 import time
-import sys
+import sys, subprocess
 sys.path.append(r"/home/tank/cys/rhythm/BE/rhythm-extend")
 
 # SCIMARK
@@ -234,6 +234,35 @@ def runkill():
     elif killjob[2] == "sci":
         killer = HpcKiller(job=killjob)
         killer.killScimark()
+        return "kill Hpc Job {}".format(killjob)
+
+def killBE():
+    '''
+    kill all BE
+    :return:
+    '''
+    cmd = "docker exec -i Tensor-Worker-1 bash /home/tank/killAll.sh && " \
+          "docker exec -i Spark-1 bash /home/tank/killAll.sh && " \
+          "docker exec -i Scimark bash /home/tank/killAll.sh"
+    subprocess.run(cmd, shell=True)
+
+
+
+@app.route("/killrandom",methods=["GET"])
+def killrandom():
+    killjob = getAllPriority(sci, spark, cnn)
+    if not killjob: return "没有正在运行的BE"
+    if killjob[2] == "spark":
+        cmd = "docker exec -i Spark-1 bash /home/tank/killAll.sh"
+        subprocess.run(cmd, shell=True)
+        return "kill Spark Job {}".format(killjob)
+    elif killjob[2] == "AI":
+        cmd = "docker exec -i Tensor-Worker-1 bash /home/tank/killAll.sh"
+        subprocess.run(cmd, shell=True)
+        return "kill Ai Job {}".format(killjob)
+    elif killjob[2] == "sci":
+        cmd = "docker exec -i Scimark bash /home/tank/killAll.sh"
+        subprocess.run(cmd, shell=True)
         return "kill Hpc Job {}".format(killjob)
 
 
