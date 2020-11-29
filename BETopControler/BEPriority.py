@@ -100,7 +100,7 @@ def randomPick(unp,p):
             j = random.randint(0, len(p)-1)
             return ['predict', p[j]]
         else:
-            j = random.randint(0, len(unp-1))
+            j = random.randint(0, len(unp)-1)
             return ['predict', unp[j]]
 
 def getHpccPriority(hpcc):
