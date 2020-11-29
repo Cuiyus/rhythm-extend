@@ -23,10 +23,12 @@ def killBE():
     kill all BE
     :return:
     '''
-    cmd = "docker exec -i Tensor-Worker-1 bash /home/tank/killAll.sh && " \
-          "docker exec -i Spark-1 bash /home/tank/killAll.sh && " \
-          "docker exec -i Scimark bash /home/tank/killAll.sh"
-    subprocess.run(cmd, shell=True)
+    cmd1 = "docker exec -i Tensor-Worker-1 bash /home/tank/killAll.sh "
+    cmd2 = "docker exec -i Spark-1 bash /home/tank/killAll.sh"
+    cmd3 = "docker exec -i Scimark bash /home/tank/killAll.sh"
+    subprocess.run(cmd1, shell=True)
+    subprocess.run(cmd2, shell=True)
+    subprocess.run(cmd3, shell=True)
     endtime = time.time()
     with open(file, "w+") as f:
         print(endtime, file=f)
