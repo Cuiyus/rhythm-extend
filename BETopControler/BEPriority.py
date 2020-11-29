@@ -98,10 +98,10 @@ def randomPick(unp,p):
         i = random.randint(0, 100)
         if (i/2)==0:#选择可预测队列
             j = random.randint(0, len(p))
-            return ['predict', p[i]]
+            return ['predict', p[j]]
         else:
             j = random.randint(0, len(unp))
-            return ['predict', unp[i]]
+            return ['predict', unp[j]]
 
 def getHpccPriority(hpcc):
     '''
