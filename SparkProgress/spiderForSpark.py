@@ -206,7 +206,10 @@ class sparkProgress(object):
             # print("{} 任务未完成初始化 -- getAppCoarseGrainedExecutorPort".format(app[0]))
             return None
         # Spark Application Driver
-        driver = response.json()[0]
+        try:
+            driver = response.json()[0]
+        except IndexError:
+            print("Nodriver")
         executor = response.json()[1:]
         for exe in executor:
             try:
