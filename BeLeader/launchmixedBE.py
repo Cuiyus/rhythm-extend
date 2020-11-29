@@ -80,9 +80,9 @@ def killrandom():
 def getActiveJob():
     pass
 if __name__ == '__main__':
-    BElist = ["AI", "KMeans", "Hpcc",
-              "AI", "LogisticRegression", "Hpcc",
-              "AI", "KMeans", "Hpcc", "Hpcc"]
+    BElist = ["Hpcc","AI", "KMeans",
+              "Hpcc","AI", "LogisticRegression",
+              "Hpcc","AI", "KMeans", "Hpcc", ]
     global loader
 
     if len(sys.argv) >=2 :
