@@ -1,6 +1,6 @@
 # coding=utf-8
 import time
-import sys, subprocess
+import sys, subprocess, random
 sys.path.append(r"/home/tank/cys/rhythm/BE/rhythm-extend")
 
 # SCIMARK
@@ -83,6 +83,26 @@ def pickJob(unp,p):
             anw = unp[0]
             return ['unpredict', anw]
 
+def randomPick(unp,p):
+    if not unp and not p:
+        return None
+    elif unp and not p:
+        i = random.randint(0, len(unp))
+        anw = unp[i]
+        return ['unpredict',anw]
+    elif not unp and p:
+        i = random.randint(0, len(p))
+        anw = p[i]
+        return ['predict',anw]
+    else:
+        i = random.randint(0, 100)
+        if (i/2)==0:#选择可预测队列
+            j = random.randint(0, len(p))
+            return ['predict', p[i]]
+        else:
+            j = random.randint(0, len(unp))
+            return ['predict', unp[i]]
+
 def getHpccPriority(hpcc):
     '''
     :param hpcc: scimark的监控对象
@@ -113,6 +133,24 @@ def getAllPriority(sci, spark, cnn):
     for i, d in enumerate(predict_priority):
         predict_appinfo[i] = d
     pick_job = pickJob(unpredict_priority, predict_priority)
+    kill_job = None
+    if pick_job:
+        if pick_job[0] == "predict":
+            kill_job = predict_appinfo.get(0)
+        else:
+            kill_job = unpredict_priority[0]
+    else:
+        print("没有BE任务在运行")
+    return kill_job
+
+def pickRandom(sci, spark, cnn):
+    predict_appinfo = {}
+    unpredict_appinfo, unpredict_priority = getHpccPriority(sci)
+    # 获取存储有AI与spark不可预测任务信息的队列
+    predict_priority = spark.priority + cnn.priority
+    for i, d in enumerate(predict_priority):
+        predict_appinfo[i] = d
+    pick_job = randomPick(unpredict_priority, predict_priority)
     kill_job = None
     if pick_job:
         if pick_job[0] == "predict":
@@ -250,19 +288,19 @@ def killBE():
 
 @app.route("/killrandom",methods=["GET"])
 def killrandom():
-    killjob = getAllPriority(sci, spark, cnn)
+    killjob = pickRandom(sci, spark, cnn)
     if not killjob: return "没有正在运行的BE"
     if killjob[2] == "spark":
-        cmd = "docker exec -i Spark-1 bash /home/tank/killAll.sh"
-        subprocess.run(cmd, shell=True)
-        return "kill Spark Job {}".format(killjob)
+        killer = SparkKiller(spark=spark, job=killjob, worker=None)
+        killer.killApplication()
+        return "kill Spark Application {}".format(killer.job[0])
     elif killjob[2] == "AI":
-        cmd = "docker exec -i Tensor-Worker-1 bash /home/tank/killAll.sh"
-        subprocess.run(cmd, shell=True)
+        killer = AiKiller(job=killjob)
+        killer.killsyncJob()
         return "kill Ai Job {}".format(killjob)
     elif killjob[2] == "sci":
-        cmd = "docker exec -i Scimark bash /home/tank/killAll.sh"
-        subprocess.run(cmd, shell=True)
+        killer = HpcKiller(job=killjob)
+        killer.killScimark()
         return "kill Hpc Job {}".format(killjob)
 
 

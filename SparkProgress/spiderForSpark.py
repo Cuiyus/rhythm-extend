@@ -113,7 +113,8 @@ class sparkProgress(object):
             progress["progress"] = running_job / int(runningJobTaskInfo[1])
             self.appProgress.append([app[0], progress["progress"], "spark"])
         except AttributeError as err:
-            print("completedJobInfo 未获取",err)
+            # print("completedJobInfo 未获取",err)
+            pass
         except ZeroDivisionError as err:
             print("The spark Job提交后未完成任务初始化，Total Task= 0")
             self.appProgress.append([app[0], 0.0, "spark"])
