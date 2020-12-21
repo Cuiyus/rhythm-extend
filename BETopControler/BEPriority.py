@@ -34,15 +34,26 @@ def startAIMonitor(cnn):
 
 # 构建Rmi调用
 def rmiServer(sci, spark, cnn):
-    daemon = Pyro4.Daemon()
-    uri_sci = daemon.register(sci)
-    uri_spark = daemon.register(spark)
-    uri_cnn = daemon.register(cnn)
-    ns = Pyro4.locateNS()
-    ns.register("sci", uri_sci)
-    ns.register("spark", uri_spark)
-    ns.register("cnn", uri_cnn)
-    daemon.requestLoop()
+    Pyro4.Daemon.serveSimple(
+        {
+            sci: 'sci',  # 需要代理的类
+            spark: "spark",
+            cnn:"cnn"
+        },
+        host="0.0.0.0",  # IP地址
+        port=9090,  # 端口号
+        ns=False,  # 命名服务
+        verbose=True  #
+    )
+    # daemon = Pyro4.Daemon()
+    # uri_sci = daemon.register(sci)
+    # uri_spark = daemon.register(spark)
+    # uri_cnn = daemon.register(cnn)
+    # ns = Pyro4.locateNS()
+    # ns.register("sci", uri_sci)
+    # ns.register("spark", uri_spark)
+    # ns.register("cnn", uri_cnn)
+    # daemon.requestLoop()
 
 def MultiQueue(priority, flag):
     '''
