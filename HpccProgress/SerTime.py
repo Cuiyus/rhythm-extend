@@ -53,6 +53,9 @@ class scimarkProgress(object):
         self.observer = None
         self.path = r"/home/tank/cys/rhythm/BE/scimark/SerTime/Scimark/scilog/sci.log"
 
+    def getAppDict(self):
+        return self.appDict
+
     def sciRecord(self):
         '''
         监控scimark，当有新的scimark任务

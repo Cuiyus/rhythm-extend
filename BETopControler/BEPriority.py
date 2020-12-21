@@ -2,8 +2,13 @@
 import time
 import sys, subprocess, random, Pyro4
 sys.path.append(r"/home/tank/cys/rhythm/BE/rhythm-extend")
-
-
+import configparser
+def readConfig():
+    cfg = configparser.ConfigParser()
+    cfgname = "../config/config.ini"
+    cfg.read(cfgname, encoding='utf-8')
+    return cfg
+cfg = readConfig()
 # SCIMARK
 from HpccProgress.SerTime import scimarkProgress, scimarkHandler, Observer, resource
 sci = scimarkProgress()
@@ -15,7 +20,7 @@ def startHPCMonitor(sci):
 
 # 启动Spark监控，每一秒更新一次spark的任务信息
 from SparkProgress.spiderForSpark import sparkProgress
-spark = sparkProgress("192.168.1.106")
+spark = sparkProgress(cfg.get("SPARK", "ip"))
 def startSparkMonitor(spark):
     spark.run()
     print("Start SparkMonitor")

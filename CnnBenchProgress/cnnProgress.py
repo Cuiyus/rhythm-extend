@@ -21,6 +21,8 @@ class cnnProgress(object):
         self.lock = threading.RLock()
         self.appProgress = []
 
+    def getAppDict(self):
+        return self.appDict
 
     def refreshAppDict(self, data):
         try:

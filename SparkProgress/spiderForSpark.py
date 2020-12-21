@@ -31,6 +31,13 @@ class sparkProgress(object):
         self.priority = []
         self.lock = threading.RLock()
 
+    def getAppDict(self):
+        return self.appDict
+
+    def getExecutor(self):
+        return self.app_Executor
+
+
     def reflashAppDict(self, data):
         '''
         如果不加锁的话
