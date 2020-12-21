@@ -43,7 +43,8 @@ class scimarkHandler(FileSystemEventHandler):
                     self.lock.release()
 
 
-
+import Pyro4
+@Pyro4.expose
 class scimarkProgress(object):
     def __init__(self):
         self.lock = threading.RLock()

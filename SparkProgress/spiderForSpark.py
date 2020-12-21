@@ -5,7 +5,7 @@ from multiprocessing import Pool, process
 import threading
 from bs4 import BeautifulSoup
 from copy import deepcopy
-import Pyro4
+
 '''
 刻画不同spark的工作进度
 已实现功能：
@@ -13,7 +13,8 @@ import Pyro4
 2. 采集正在运行时的task启动时间,可用来计算kill操作的是loss
 3. 修改为web触发式函数
 '''
-
+import Pyro4
+@Pyro4.expose
 class sparkProgress(object):
     def __init__(self, ip):
         # sparkui and rest IP

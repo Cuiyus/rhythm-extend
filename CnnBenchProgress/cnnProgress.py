@@ -11,7 +11,8 @@ import subprocess, threading
  -- 1. 缺乏控制程序
 2. 目前只能获取同步任务，缺乏对异步任务，非分布式任务的监控
 '''
-
+import Pyro4
+@Pyro4.expose
 class cnnProgress(object):
     def __init__(self):
         self.appDict = set()
