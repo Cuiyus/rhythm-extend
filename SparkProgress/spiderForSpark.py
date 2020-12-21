@@ -5,6 +5,7 @@ from multiprocessing import Pool, process
 import threading
 from bs4 import BeautifulSoup
 from copy import deepcopy
+import Pyro4
 '''
 刻画不同spark的工作进度
 已实现功能：

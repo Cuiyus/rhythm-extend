@@ -1,7 +1,8 @@
 # coding=utf-8
 import time
-import sys, subprocess, random
+import sys, subprocess, random, Pyro4
 sys.path.append(r"/home/tank/cys/rhythm/BE/rhythm-extend")
+
 
 # SCIMARK
 from HpccProgress.SerTime import scimarkProgress, scimarkHandler, Observer, resource
@@ -25,6 +26,13 @@ cnn = cnnProgress()
 def startAIMonitor(cnn):
     cnn.run()
     print("Start CnnMonitor")
+
+# 构建Rmi调用
+daemon = Pyro4.Daemon()
+uri_sci = daemon.register(sci)
+uri_spark = daemon.register(spark)
+uri_cnn = daemon.register(cnn)
+daemon.requestLoop()
 
 def MultiQueue(priority, flag):
     '''
@@ -247,12 +255,8 @@ def getActiveJob():
     info = {"jobs" : list(jobs), "Nums" : len(jobs)}
     return jsonify(info)
 
-
-
 # Killer
 from BETopControler.controlkiller import SparkKiller, AiKiller, HpcKiller
-
-
 
 @app.route("/runkill",methods=["GET"])
 def runkill():
@@ -305,6 +309,7 @@ def killrandom():
 
 
 if __name__ == '__main__':
+    print("Rmi Sci:{0} Spark:{1} AI:{2}".format(uri_sci,uri_spark,uri_cnn))
     Monitorinit()
     print("Flask启动")
     app.run(host="0.0.0.0", port=10089)

@@ -3,6 +3,28 @@ import subprocess
 from flask import Flask, jsonify, request, Response
 from threading import Thread
 import time, sys
+import configparser
+
+import logging
+logging.basicConfig(level = logging.INFO, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+# class Topcontroller():
+#     def __init__(self):
+#         self.cfg = self.readcfg()
+#     def readcfg(self):
+#         cfg = configparser.ConfigParser()
+#         cfgname = "config.ini"
+#         cfg.read(cfgname, encoding='utf-8')
+#         if len(cfg.sections()) == 0:
+#             print("配置文件为空或者配置文件路径错误")
+#             raise FileNotFoundError
+#         return cfg
+
+def readConfig():
+    cfg = configparser.ConfigParser()
+    cfgname = "config.ini"
+    cfg.read(cfgname, encoding='utf-8')
+    return cfg
 # 用生成器来实现
 file = r"/home/tank/cys/rhythm/BE/beleader-img/leader-volume/killtime.log"
 
@@ -52,16 +74,22 @@ def launchBE(be):
         hpcc.start()
         return "Start Hpcc"
 
-def launch(joblist, type):
+
+def launch(arriveBe, rescheduBe, type):
     if type[0] == "loop":
         i = 0
         while True:
-            if i == len(joblist): i = 0
-            yield launchBE(joblist[i])
+            if i == len(arriveBe): i = 0
+            yield launchBE(arriveBe[i])
             i=i+1
+            while rescheduBe: yield launchBE(rescheduBe.pop(0))
+
     elif type[0] == "fix":
-        for i in range(type[1]):
-            yield launchBE(joblist[i])
+        while arriveBe:
+            yield launchBE(arriveBe.pop(0))
+        while rescheduBe:
+            yield launchBE(rescheduBe.pop(0))
+
 
 app = Flask(__name__)
 @app.route("/launchmix", methods=["GET",])
@@ -82,16 +110,16 @@ def killrandom():
 def getActiveJob():
     pass
 if __name__ == '__main__':
-    arriveBe = ["Hpcc","AI", "KMeans",
+    arriveBe = ["Hpcc", "AI", "KMeans",
               "Hpcc","AI", "LogisticRegression",
               "Hpcc","AI", "KMeans",
               "Hpcc", ]
-    reschedBe = []
+    rescheduBe = []
+    cfg = readConfig()
     global loader
-    if len(sys.argv) >=2 :
-        type, l = sys.argv[1], int(sys.argv[2])
     # type：loop type：fixed（6）
-
-    loader = launch(arriveBe, [type, l])
+    loader = launch(arriveBe, cfg.get("Experiment", "type"))
     app.run(host="0.0.0.0", port=10081)
+
+
 
