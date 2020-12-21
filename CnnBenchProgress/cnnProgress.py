@@ -40,7 +40,7 @@ class cnnProgress(object):
         finally:
             self.lock.release()
 
-    def getAppDict(self):
+    def recordAppDict(self):
         while True:
             cmd = ["docker", "exec", "-i", "Tensor-Worker-1", "bash", "/root/outins.sh"]
             info = subprocess.run(cmd, stdout=subprocess.PIPE)
@@ -82,7 +82,7 @@ class cnnProgress(object):
             self.priority.sort(key=lambda x: x[1], reverse=False)
 
     def run(self):
-        updateappDict = threading.Thread(target=self.getAppDict)
+        updateappDict = threading.Thread(target=self.recordAppDict)
         pri = threading.Thread(target=self.Priority)
         updateappDict.start()
         pri.start()
