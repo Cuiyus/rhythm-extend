@@ -59,6 +59,7 @@ def killBE():
         app = "--".join([tmp[i] for i in orders])
     path = cfg.get("Experiment","log")
     rescheduBe = deepcopy(activeJob)
+    print("rescheduBe=============", rescheduBe)
     form = "Current activeJob's Order: {}  App:{}\n"
     with open(path, "a+") as f:
         f.write(form.format(str(orders),app))
@@ -102,6 +103,7 @@ def launchBE(be, order):
         activeJob[order] = ["hpcc", ]
         if sciappdict:
             activeJob[order].append(sciappdict[-1])
+        print("Activejob=======", activeJob)
         hpcc = Thread(target=launchHpcc)
         hpcc.start()
         return "Start Hpcc"
@@ -118,9 +120,9 @@ def launch(arriveBe, rescheduBe, type):
     elif type == "fix":
         order = 0
         while arriveBe:
-            order += 1
             job = arriveBe.pop(0)
             yield launchBE(job, order)
+            order += 1
         while rescheduBe:
             minorder = min(rescheduBe.keys())
             job = rescheduBe.pop(minorder)[0]
