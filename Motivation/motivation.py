@@ -55,11 +55,12 @@ def killBE():
     '''
 
     orders = list(activeJob.keys())
-    app = "--".join([tmp[i] for i in orders])
+    if orders:
+        app = "--".join([tmp[i] for i in orders])
     path = cfg.get("Experiment","log")
     rescheduBe = deepcopy(activeJob)
     form = "Current activeJob's Order: {}  App:{}\n"
-    with open(path, "w+") as f:
+    with open(path, "a+") as f:
         f.write(form.format(str(orders),app))
     activeJob.clear()
     cmd1 = "docker exec -i Tensor-Worker-1 bash /home/tank/killAll.sh "
