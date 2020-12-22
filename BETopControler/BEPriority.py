@@ -41,7 +41,7 @@ def rmiServer(sci, spark, cnn, cfg):
             cnn:"cnn"
         },
         host=cfg.get("rmi", "ip"),  # IP地址
-        port=cfg.get("rmi", "port"),  # 端口号
+        port=int(cfg.get("rmi", "port")),  # 端口号
         ns=False,  # 命名服务
         verbose=True  #
     )
