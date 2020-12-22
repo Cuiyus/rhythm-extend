@@ -106,7 +106,7 @@ def launchBE(be, order):
         return "Start Hpcc"
 
 def launch(arriveBe, rescheduBe, type):
-    if type[0] == "loop":
+    if type == "loop":
         i = 0
         while True:
             if i == len(arriveBe): i = 0
@@ -114,7 +114,7 @@ def launch(arriveBe, rescheduBe, type):
             i=i+1
             while rescheduBe: yield launchBE(rescheduBe.pop(0))
 
-    elif type[0] == "fix":
+    elif type == "fix":
         order = 0
         while arriveBe:
             order += 1
