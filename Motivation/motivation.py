@@ -142,8 +142,8 @@ def killall():
 def killrandom():
     pass
 @app.route("/getactivajob", methods=["GET",])
-def getActiveJob():
-    pass
+def getrescheduBe():
+    return jsonify(rescheduBe)
 if __name__ == '__main__':
     arriveBe = ["Hpcc", "AI", "KMeans",
               "Hpcc","AI", "LogisticRegression",
