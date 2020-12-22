@@ -71,6 +71,7 @@ def killBE():
 
     orders = refreshActiveJob()
     path = cfg.get("Experiment","log")
+    print(orders)
     if orders:
         app = "--".join([tmp[i] for i in orders])
         rescheduBe = [tmp[i] for i in orders]
@@ -90,6 +91,10 @@ def killBE():
 
 def launchBE(be, order):
     path = cfg.get("Experiment", "log")
+    with open(path, "a+") as f:
+        print('----'*10,'\n')
+        print("Curren Launch {}th job {}\n".format(order,be), file=f)
+        print('----'*10,'\n')
     if be == "AI":
         step = cfg.get("AI", 'step')
         cnnappdict = list(cnn.getAppDict())
@@ -123,10 +128,7 @@ def launchBE(be, order):
         hpcc = Thread(target=launchHpcc)
         hpcc.start()
         return "Start Hpcc"
-    with open(path, "a+") as f:
-        print('----'*10,'\n')
-        print("Curren Launch {}th job {}\n".format(order,be), file=f)
-        print('----'*10,'\n')
+
 
 def launch(arriveBe, rescheduBe, type):
     if type == "loop":
