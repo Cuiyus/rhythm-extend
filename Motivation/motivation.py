@@ -167,7 +167,7 @@ def killrandom():
 def getrescheduBe():
     return jsonify(rescheduBe)
 @app.route("/getLaunchBe", methods=["GET",])
-def getrescheduBe():
+def getlaunchedBe():
     return jsonify(launchOrder)
 if __name__ == '__main__':
     arriveBe = ["Hpcc", "AI", "KMeans",
