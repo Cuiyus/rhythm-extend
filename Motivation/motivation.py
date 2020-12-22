@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 # 读取配置文件
 def readConfig():
     cfg = configparser.ConfigParser()
-    cfgname = "config.ini"
+    cfgname = "../config/config.ini"
     cfg.read(cfgname, encoding='utf-8')
     return cfg
 cfg = readConfig()
