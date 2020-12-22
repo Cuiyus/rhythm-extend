@@ -92,9 +92,9 @@ def killBE():
 def launchBE(be, order):
     path = cfg.get("Experiment", "log")
     with open(path, "a+") as f:
-        print('----'*10,'\n')
+        print('----'*10,'\n', file=f)
         print("Curren Launch {}th job {}\n".format(order,be), file=f)
-        print('----'*10,'\n')
+        print('----'*10,'\n', file=f)
     if be == "AI":
         step = cfg.get("AI", 'step')
         cnnappdict = list(cnn.getAppDict())
