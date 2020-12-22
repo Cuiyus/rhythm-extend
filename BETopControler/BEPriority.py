@@ -8,7 +8,7 @@ def readConfig():
     cfgname = "../config/config.ini"
     cfg.read(cfgname, encoding='utf-8')
     return cfg
-cfg = readConfig()
+cfg =readConfig()
 # SCIMARK
 from HpccProgress.SerTime import scimarkProgress, scimarkHandler, Observer, resource
 sci = scimarkProgress()
@@ -33,15 +33,15 @@ def startAIMonitor(cnn):
     print("Start CnnMonitor")
 
 # 构建Rmi调用
-def rmiServer(sci, spark, cnn):
+def rmiServer(sci, spark, cnn, cfg):
     Pyro4.Daemon.serveSimple(
         {
             sci: 'sci',  # 需要代理的类
             spark: "spark",
             cnn:"cnn"
         },
-        host="0.0.0.0",  # IP地址
-        port=9090,  # 端口号
+        host=cfg.get("rmi", "ip"),  # IP地址
+        port=cfg.get("rmi", "port"),  # 端口号
         ns=False,  # 命名服务
         verbose=True  #
     )
@@ -329,8 +329,10 @@ def killrandom():
         return "kill Hpc Job {}".format(killjob)
 
 
+
 if __name__ == '__main__':
-    rmi = threading.Thread(target=rmiServer, args=(sci, spark, cnn))
+    # cfg = readConfig()
+    rmi = threading.Thread(target=rmiServer, args=(sci, spark, cnn, cfg))
     rmi.start()
     print("rmi服务启动")
     Monitorinit()
