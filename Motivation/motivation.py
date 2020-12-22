@@ -73,7 +73,7 @@ def killBE():
 def launchBE(be, order):
     if be == "AI":
         step = cfg.get("AI", 'step')
-        cnnappdict = cnn.getAppDict()
+        cnnappdict = list(cnn.getAppDict())
         activeJob[order] = ["AI",]
         if cnnappdict:
             activeJob[order].append(cnnappdict[-1])
@@ -81,7 +81,7 @@ def launchBE(be, order):
         ai.start()
         return "Start AI"
     elif be == "KMeans":
-        sparkappdict = spark.getAppDict()
+        sparkappdict = list(spark.getAppDict())
         activeJob[order]=["Kmeans",]
         if sparkappdict:
             activeJob[order].append(sparkappdict[-1])
@@ -89,7 +89,7 @@ def launchBE(be, order):
         kmeans.start()
         return "Start KMeans"
     elif be == "LogisticRegression":
-        sparkappdict = spark.getAppDict()
+        sparkappdict = list(spark.getAppDict())
         activeJob[order] = ["LogisticRegression", ]
         if sparkappdict:
             activeJob[order].append(sparkappdict[-1])
@@ -97,7 +97,7 @@ def launchBE(be, order):
         lg.start()
         return "Start LogisticRegression"
     elif be == "Hpcc":
-        sciappdict = sci.getAppDict()
+        sciappdict = list(sci.getAppDict())
         activeJob[order] = ["hpcc", ]
         if sciappdict:
             activeJob[order].append(sciappdict[-1])
