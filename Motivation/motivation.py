@@ -48,22 +48,38 @@ def launchHpcc():
     cmd = "docker exec -i Scimark bash /home/tank/addBeCopy_cpu.sh  "
     subprocess.run(cmd, shell=True)
 
+def refreshActiveJob():
+    sciapp = list(sci.getAppDict())
+    sparkapp = list(spark.getAppDict())
+    cnnapp = list(cnn.getAppDict())
+
+    app = sciapp + sparkapp + cnnapp
+    activeOrder = []
+    for i in app:
+        if i in activeJobInfo:
+            activeOrder.append(activeJobInfo[i])
+    return activeOrder
+
+
+
+
 def killBE():
     '''
     kill all BE
     :return:
     '''
 
-    orders = list(activeJob.keys())
+    orders = refreshActiveJob()
+    path = cfg.get("Experiment","log")
     if orders:
         app = "--".join([tmp[i] for i in orders])
-    path = cfg.get("Experiment","log")
-    rescheduBe = deepcopy(activeJob)
-    print("rescheduBe=============", rescheduBe)
-    form = "Current activeJob's Order: {}  App:{}\n"
-    with open(path, "a+") as f:
-        f.write(form.format(str(orders),app))
-    activeJob.clear()
+        rescheduBe = [tmp[i] for i in orders]
+        form = "Current activeJob's(ReschdeuBe) Order: {}  App:{}\n"
+        with open(path, "a+") as f:
+            print("----"*10, '\n', file=f)
+            f.write(form.format(str(orders),app))
+            print("----" * 10, '\n', file=f)
+    activeJobInfo.clear()
     cmd1 = "docker exec -i Tensor-Worker-1 bash /home/tank/killAll.sh "
     cmd2 = "docker exec -i Spark-1 bash /home/tank/killAll.sh"
     cmd3 = "docker exec -i Scimark bash /home/tank/killAll.sh"
@@ -73,40 +89,44 @@ def killBE():
 
 
 def launchBE(be, order):
+    path = cfg.get("Experiment", "log")
     if be == "AI":
         step = cfg.get("AI", 'step')
         cnnappdict = list(cnn.getAppDict())
-        activeJob[order] = ["AI",]
+        launchOrder[order] = "AI"
         if cnnappdict:
-            activeJob[order].append(cnnappdict[-1])
+            activeJobInfo[cnnappdict[-1]] = order
         ai = Thread(target=launchAi, args=(step,))
         ai.start()
         return "Start AI"
     elif be == "KMeans":
         sparkappdict = list(spark.getAppDict())
-        activeJob[order]=["Kmeans",]
+        launchOrder[order]= "Kmeans"
         if sparkappdict:
-            activeJob[order].append(sparkappdict[-1])
+            activeJobInfo[sparkappdict[-1]] = order
         kmeans = Thread(target=launchSpark, args=(be,))
         kmeans.start()
         return "Start KMeans"
     elif be == "LogisticRegression":
         sparkappdict = list(spark.getAppDict())
-        activeJob[order] = ["LogisticRegression", ]
+        launchOrder[order] = "LogisticRegression"
         if sparkappdict:
-            activeJob[order].append(sparkappdict[-1])
+            activeJobInfo[sparkappdict[-1]] = order
         lg = Thread(target=launchSpark, args=("LogisticRegression",))
         lg.start()
         return "Start LogisticRegression"
     elif be == "Hpcc":
         sciappdict = list(sci.getAppDict())
-        activeJob[order] = ["hpcc", ]
+        launchOrder[order] = "hpcc"
         if sciappdict:
-            activeJob[order].append(sciappdict[-1])
-        print("Activejob=======", activeJob)
+            activeJobInfo[sciappdict[-1]] = order
         hpcc = Thread(target=launchHpcc)
         hpcc.start()
         return "Start Hpcc"
+    with open(path, "a+") as f:
+        print('----'*10,'\n')
+        print("Curren Launch {}th job {}\n".format(order,be), file=f)
+        print('----'*10,'\n')
 
 def launch(arriveBe, rescheduBe, type):
     if type == "loop":
@@ -143,9 +163,12 @@ def killall():
 @app.route("/killrandom", methods=["GET",])
 def killrandom():
     pass
-@app.route("/getactivajob", methods=["GET",])
+@app.route("/getResBe", methods=["GET",])
 def getrescheduBe():
     return jsonify(rescheduBe)
+@app.route("/getLaunchBe", methods=["GET",])
+def getrescheduBe():
+    return jsonify(launchOrder)
 if __name__ == '__main__':
     arriveBe = ["Hpcc", "AI", "KMeans",
               "Hpcc","AI", "LogisticRegression",
@@ -156,12 +179,19 @@ if __name__ == '__main__':
     tmp = arriveBe.copy()
 
     global rescheduBe
-    rescheduBe = {} # 想要用字典保存任务启动的序号
+    rescheduBe = [] # 想要用字典保存任务启动的序号
 
-    global activeJob
-    activeJob = {}
+    global launchOrder
+    launchOrder = {}
+
+    global activeJobInfo
+    activeJobInfo = {}
 
     global loader
     # type：loop type：fixed（6）
     loader = launch(arriveBe, rescheduBe, cfg.get("Experiment", "type"))
+
+    # 清空日志内容
+    path = cfg.get("Experiment", "log")
+    with open(path, "wb+") as f: f.truncate()
     app.run(host="0.0.0.0", port=10081)
