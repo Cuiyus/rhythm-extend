@@ -77,9 +77,8 @@ def killBE():
         rescheduBe = [tmp[i] for i in orders]
         form = "Current activeJob's(ReschdeuBe) Order: {}  App:{}\n"
         with open(path, "a+") as f:
-            print("----"*10, '\n', file=f)
+            print("----"*10, file=f)
             f.write(form.format(str(orders),app))
-            print("----" * 10, '\n', file=f)
     activeJobInfo.clear()
     cmd1 = "docker exec -i Tensor-Worker-1 bash /home/tank/killAll.sh "
     cmd2 = "docker exec -i Spark-1 bash /home/tank/killAll.sh"
@@ -92,9 +91,8 @@ def killBE():
 def launchBE(be, order):
     path = cfg.get("Experiment", "log")
     with open(path, "a+") as f:
-        print('----'*10,'\n', file=f)
+        print('----'*10, file=f)
         print("Curren Launch {}th job {}\n".format(order,be), file=f)
-        print('----'*10,'\n', file=f)
     if be == "AI":
         step = cfg.get("AI", 'step')
         cnnappdict = list(cnn.getAppDict())
@@ -171,6 +169,9 @@ def getrescheduBe():
 @app.route("/getLaunchBe", methods=["GET",])
 def getlaunchedBe():
     return jsonify(launchOrder)
+@app.route("/getActiveBe", methods=["GET",])
+def getActiveBe():
+    return jsonify(activeJobInfo)
 if __name__ == '__main__':
     arriveBe = ["Hpcc", "AI", "KMeans",
               "Hpcc","AI", "LogisticRegression",
