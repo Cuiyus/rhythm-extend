@@ -9,17 +9,6 @@ from copy import deepcopy
 import logging, threading
 logging.basicConfig(level = logging.INFO, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-# class Topcontroller():
-#     def __init__(self):
-#         self.cfg = self.readcfg()
-#     def readcfg(self):
-#         cfg = configparser.ConfigParser()
-#         cfgname = "config.ini"
-#         cfg.read(cfgname, encoding='utf-8')
-#         if len(cfg.sections()) == 0:
-#             print("配置文件为空或者配置文件路径错误")
-#             raise FileNotFoundError
-#         return cfg
 # 读取配置文件
 def readConfig():
     cfg = configparser.ConfigParser()
@@ -61,8 +50,6 @@ def refreshActiveJob():
     return activeOrder
 
 
-
-
 def killBE():
     '''
     kill all BE
@@ -86,7 +73,6 @@ def killBE():
     subprocess.run(cmd1, shell=True)
     subprocess.run(cmd2, shell=True)
     subprocess.run(cmd3, shell=True)
-
 
 def launchBE(be, order):
     path = cfg.get("Experiment", "log")

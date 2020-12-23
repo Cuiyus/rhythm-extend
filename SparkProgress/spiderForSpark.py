@@ -81,7 +81,8 @@ class sparkProgress(object):
         url = "http://192.168.1.106:8088/ws/v1/cluster/apps?queue=default"
         trackingUrl = False
         appinfo = set()
-        while not trackingUrl:
+        timeout = 5 # 如果5秒内还是无法查询到Spark任务的信息，则返回空集合
+        while ((not trackingUrl) or timeout):
             apps = self.getResponse(url).json()["apps"]
             if apps:
                 for i, app in enumerate(apps["app"]):
@@ -91,6 +92,8 @@ class sparkProgress(object):
                     appinfo.add((app["id"], app["trackingUrl"]))
                     if i == (len(apps["app"]) - 1):
                         trackingUrl = True
+            time.sleep(timeout)
+            timeout -= 1
         self.reflashAppDict(appinfo)
         return appinfo
 
