@@ -6,7 +6,7 @@ import time, sys
 import configparser
 import Pyro4, json
 from copy import deepcopy
-import logging
+import logging, threading
 logging.basicConfig(level = logging.INFO, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 # class Topcontroller():
@@ -95,8 +95,8 @@ def launchBE(be, order):
         print("Curren Launch {}th job {}\n".format(order,be), file=f)
     if be == "AI":
         step = cfg.get("AI", 'step')
-        cnnappdict = list(cnn.getAppDict())
         launchOrder[order] = "AI"
+        cnnappdict = list(cnn.getAppDict())
         if cnnappdict:
             activeJobInfo[cnnappdict[-1]] = order
         ai = Thread(target=launchAi, args=(step,))
