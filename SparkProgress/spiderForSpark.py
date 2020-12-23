@@ -2,7 +2,7 @@ import requests
 import time,re
 import subprocess
 from multiprocessing import Pool, process
-import threading
+import threading, configparser
 from bs4 import BeautifulSoup
 from copy import deepcopy
 
@@ -48,7 +48,7 @@ class sparkProgress(object):
         try:
             self.lock.acquire()
             self.appDict.clear()
-            self.appDict = self.getAppID_Port()
+            self.appDict = self.appDict.union(data)
         finally:
             self.lock.release()
 
@@ -326,6 +326,24 @@ class sparkProgress(object):
 
 
 
+def rmiServer(spark, cfg):
+    Pyro4.Daemon.serveSimple(
+        {
+            spark: "spark"
+        },
+        host=cfg.get("rmi", "ip"),  # IP地址
+        port=int(cfg.get("rmi", "port")),  # 端口号
+        ns=False,  # 命名服务
+        verbose=True  #
+    )
+
+def readConfig():
+    cfg = configparser.ConfigParser()
+    cfgname = "../config/config.ini"
+    cfg.read(cfgname, encoding='utf-8')
+    return cfg
+
+
 
 from flask import Flask,jsonify
 
@@ -341,13 +359,21 @@ def getPriority():
     如果要设置多个K级队列，则将job_order进行划分
     :return:
     '''
-    spark.Priority()
-    priority = spark.priority
+    app = spark.getAppID_Port()
+    p = spark.getPriority()
+    print("App",app)
+    print("App dict",spark.appDict)
     job_order = {}
-    for i, app in enumerate(priority):
-        job_order[i] = app
+    for i, a in enumerate(p):
+        job_order[i] = a
     return jsonify(job_order)
+    # return {"job":app}
+
+
 
 if __name__ == '__main__':
     spark = sparkProgress(ip="192.168.1.106")
+    cfg = readConfig()
+    print(cfg.get("rmi", "ip"))
+    rmiServer(spark,cfg)
     app.run(host="0.0.0.0",port=10087)
