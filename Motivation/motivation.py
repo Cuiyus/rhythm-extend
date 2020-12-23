@@ -108,7 +108,7 @@ def launchBE(be, order):
         sciappdict = list(sci.getAppDict())
         launchOrder[order] = "hpcc"
         if sciappdict:
-            activeJobInfo[sciappdict[-1]] = order
+            activeJobInfo[order] = sciappdict[-1]
         hpcc = Thread(target=launchHpcc)
         hpcc.start()
         return "Start Hpcc"
