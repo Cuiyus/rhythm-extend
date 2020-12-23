@@ -126,7 +126,6 @@ def stepPredict(func, data_path, loss):
 from flask import Flask, jsonify
 app = Flask(__name__)
 @app.route("/getPriority", methods=["GET"])
-
 def getPriority():
     job_order = {}
     if cnn.priority:
@@ -138,6 +137,13 @@ def getPriority():
 def index():
     return "启动成功"
 
+@app.route("/getActiveJob", methods=["GET"])
+def getActiveJob():
+    apps = cnn.getAppDict()
+    d = {}
+    for i, app in enumerate(apps):
+        d[i] = app
+    return jsonify(d)
 if __name__ == '__main__':
     cnn = cnnProgress()
     print("Start cnn Monitor")
