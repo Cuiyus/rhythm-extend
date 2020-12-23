@@ -346,8 +346,6 @@ def readConfig():
     cfg.read(cfgname, encoding='utf-8')
     return cfg
 
-
-
 from flask import Flask,jsonify
 
 app = Flask(__name__)
@@ -372,11 +370,9 @@ def getPriority():
     return jsonify(job_order)
     # return {"job":app}
 
-
-
 if __name__ == '__main__':
     spark = sparkProgress(ip="192.168.1.106")
     cfg = readConfig()
     print(cfg.get("rmi", "ip"))
-    rmiServer(spark,cfg)
+    rmiServer(spark, cfg)
     app.run(host="0.0.0.0",port=10087)
