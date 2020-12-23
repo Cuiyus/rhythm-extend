@@ -84,7 +84,7 @@ def launchBE(be, order):
         launchOrder[order] = "AI"
         cnnappdict = list(cnn.getAppDict())
         if cnnappdict:
-            activeJobInfo[cnnappdict[-1]] = order
+            activeJobInfo[order] = cnnappdict[0]
         ai = Thread(target=launchAi, args=(step,))
         ai.start()
         return "Start AI"
@@ -92,7 +92,7 @@ def launchBE(be, order):
         sparkappdict = list(spark.getAppDict())
         launchOrder[order]= "Kmeans"
         if sparkappdict:
-            activeJobInfo[sparkappdict[-1]] = order
+            activeJobInfo[order] = sparkappdict[0]
         kmeans = Thread(target=launchSpark, args=(be,))
         kmeans.start()
         return "Start KMeans"
@@ -100,7 +100,7 @@ def launchBE(be, order):
         sparkappdict = list(spark.getAppDict())
         launchOrder[order] = "LogisticRegression"
         if sparkappdict:
-            activeJobInfo[sparkappdict[-1]] = order
+            activeJobInfo[order] = sparkappdict[0]
         lg = Thread(target=launchSpark, args=("LogisticRegression",))
         lg.start()
         return "Start LogisticRegression"
