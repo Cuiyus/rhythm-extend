@@ -157,7 +157,7 @@ def getAllPriority(sci, spark, cnn):
     predict_appinfo = {}
     unpredict_appinfo, unpredict_priority = getHpccPriority(sci)
     # 获取存储有AI与spark不可预测任务信息的队列
-    predict_priority = spark.priority + cnn.priority
+    predict_priority = spark.getPriority() + cnn.priority
     predict_priority.sort(key=lambda x: x[1], reverse=False)
     for i, d in enumerate(predict_priority):
         predict_appinfo[i] = d
