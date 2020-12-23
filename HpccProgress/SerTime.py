@@ -141,6 +141,13 @@ def getSertime():
 @app.route("/index", methods=["GET"])
 def index():
     return "启动成功"
+@app.route("/getActiveJob", methods=["GET"])
+def getActiveJob():
+    apps = sci.getAppDict()
+    d = {}
+    for i, app in enumerate(apps):
+         d[i] = app
+    return jsonify(d)
 
 if __name__ == '__main__':
     sci = scimarkProgress()
