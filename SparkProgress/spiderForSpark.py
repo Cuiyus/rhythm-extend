@@ -82,7 +82,7 @@ class sparkProgress(object):
         trackingUrl = False
         appinfo = set()
         timeout = 5 # 如果5秒内还是无法查询到Spark任务的信息，则返回空集合
-        while ((not trackingUrl) or timeout):
+        while ((not trackingUrl) and timeout):
             apps = self.getResponse(url).json()["apps"]
             if apps:
                 for i, app in enumerate(apps["app"]):
@@ -92,7 +92,7 @@ class sparkProgress(object):
                     appinfo.add((app["id"], app["trackingUrl"]))
                     if i == (len(apps["app"]) - 1):
                         trackingUrl = True
-            time.sleep(timeout)
+            time.sleep(1)
             timeout -= 1
         self.reflashAppDict(appinfo)
         return appinfo
