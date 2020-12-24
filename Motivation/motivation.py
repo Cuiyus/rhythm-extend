@@ -40,6 +40,7 @@ def launchHpcc():
     subprocess.run(cmd, shell=True)
 
 def refreshActiveJob():
+    global activeJobInfo
     sciapp = list(sci.getAppDict())
     sparkapp = list(spark.getAppDict())
     cnnapp = list(cnn.getAppDict())
@@ -57,6 +58,9 @@ def killBE():
     kill all BE
     :return:
     '''
+    global tmp, rescheduBe
+    global activeJobInfo
+    global scicount, cnncount, sparkcount
     orders = refreshActiveJob()
     path = cfg.get("Experiment","log")
     print(orders)
@@ -79,6 +83,9 @@ def killBE():
 def launchBE(be, order):
     path = cfg.get("Experiment", "log")
     timeout =3
+    global launchOrder
+    global activeJobInfo
+    global scicount, cnncount, sparkcount
     with open(path, "a+") as f:
         print('----'*10, file=f)
         print("Curren Launch {}th job {}\n".format(order,be), file=f)
@@ -130,7 +137,8 @@ def launchBE(be, order):
         return "Start Hpcc"
 
 
-def launch(arriveBe, rescheduBe, type):
+def launch(arriveBe, type):
+    global rescheduBe
     if type == "loop":
         i = 0
         while True:
@@ -180,24 +188,18 @@ if __name__ == '__main__':
               "Hpcc","AI", "KMeans",
               "Hpcc", ]
 
-    global tmp
     tmp = arriveBe.copy()
-
-    global rescheduBe
     rescheduBe = [] # 想要用字典保存任务启动的序号
-
-    global launchOrder
     launchOrder = {}
 
-    global activeJobInfo
+
     activeJobInfo = {}
 
     global loader
     # type：loop type：fixed（6）
-    loader = launch(arriveBe, rescheduBe, cfg.get("Experiment", "type"))
+    loader = launch(arriveBe, cfg.get("Experiment", "type"))
 
     # 应用启动计数器
-    global scicount, cnncount, sparkcount
     scicount = 0
     cnncount = 0
     sparkcount = 0
