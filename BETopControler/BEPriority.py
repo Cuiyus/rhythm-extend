@@ -272,7 +272,7 @@ def killer():
 @app.route('/getActiveJob', methods=["GET"])
 def getActiveJob():
     jobs = set()
-    jobs.update(spark.getPriority(), sci.appDict, cnn.appDict)
+    jobs.update(spark.getAppDict(), sci.appDict, cnn.appDict)
     info = {"jobs" : list(jobs), "Nums" : len(jobs)}
     return jsonify(info)
 
