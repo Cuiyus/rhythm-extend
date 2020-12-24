@@ -76,6 +76,7 @@ def killBE():
 
 def launchBE(be, order):
     path = cfg.get("Experiment", "log")
+    timeout =3
     with open(path, "a+") as f:
         print('----'*10, file=f)
         print("Curren Launch {}th job {}\n".format(order,be), file=f)
@@ -84,7 +85,7 @@ def launchBE(be, order):
         launchOrder[order] = "AI"
         ai = Thread(target=launchAi, args=(step,))
         ai.start()
-        time.sleep(1)
+        time.sleep(timeout)
         cnnappdict = list(cnn.getAppDict())
         if cnnappdict:
             activeJobInfo[order] = cnnappdict[0]
@@ -93,7 +94,7 @@ def launchBE(be, order):
         launchOrder[order]= "Kmeans"
         kmeans = Thread(target=launchSpark, args=(be,))
         kmeans.start()
-        time.sleep(1)
+        time.sleep(timeout)
         sparkappdict = list(spark.getAppDict())
         if sparkappdict:
             activeJobInfo[order] = sparkappdict[0]
@@ -102,7 +103,7 @@ def launchBE(be, order):
         launchOrder[order] = "LogisticRegression"
         lg = Thread(target=launchSpark, args=("LogisticRegression",))
         lg.start()
-        time.sleep(1)
+        time.sleep(timeout)
         sparkappdict = list(spark.getAppDict())
         if sparkappdict:
             activeJobInfo[order] = sparkappdict[0]
@@ -111,7 +112,7 @@ def launchBE(be, order):
         launchOrder[order] = "hpcc"
         hpcc = Thread(target=launchHpcc)
         hpcc.start()
-        time.sleep(1)
+        time.sleep(timeout)
         sciappdict = list(sci.getAppDict())
         if sciappdict:
             activeJobInfo[order] = sciappdict[-1]
