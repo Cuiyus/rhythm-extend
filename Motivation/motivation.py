@@ -100,6 +100,7 @@ def launchBE(be, order):
             cnnappdict = list(cnn.getAppDict())
             time.sleep(1)
         print("----------------------------------------")
+        print(cnncount)
         print(cnnappdict)
         print("-----------------------------------------")
         activeJobInfo[order] = cnnappdict[0]
@@ -114,6 +115,7 @@ def launchBE(be, order):
             sparkappdict = list(spark.getAppDict())
             time.sleep(1)
         print("----------------------------------------")
+        print(sparkcount)
         print(sparkappdict)
         print("-----------------------------------------")
         activeJobInfo[order] = sparkappdict[0]
@@ -128,6 +130,7 @@ def launchBE(be, order):
             sparkappdict = list(spark.getAppDict())
             time.sleep(1)
         print("----------------------------------------")
+        print(sparkcount)
         print(sparkappdict)
         print("-----------------------------------------")
         activeJobInfo[order] = sparkappdict[0]
@@ -143,6 +146,7 @@ def launchBE(be, order):
             sciappdict = list(sci.getAppDict())
             time.sleep(1)
         print("----------------------------------------")
+        print(scicount)
         print(sciappdict)
         print("-----------------------------------------")
         activeJobInfo[order] = sciappdict[0]
