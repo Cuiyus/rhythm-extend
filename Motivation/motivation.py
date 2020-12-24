@@ -97,7 +97,7 @@ def launchBE(be, order):
         ai = Thread(target=launchAi, args=(step,))
         ai.start()
         cnnappdict = list(cnn.getAppDict())
-        while (not cnnappdict) and (len(cnnappdict) != cnncount):
+        while ((not cnnappdict) or (len(cnnappdict) != cnncount)):
             cnnappdict = list(cnn.getAppDict())
             time.sleep(1)
         print("----------------------------------------", file=f)
@@ -112,7 +112,7 @@ def launchBE(be, order):
         kmeans = Thread(target=launchSpark, args=(be,))
         kmeans.start()
         sparkappdict = list(spark.getAppDict())
-        while (not sparkappdict) and (len(sparkappdict) != sparkcount):
+        while ((not sparkappdict) or (len(sparkappdict) != sparkcount)):
             sparkappdict = list(spark.getAppDict())
             time.sleep(1)
         print("----------------------------------------", file=f)
@@ -127,7 +127,7 @@ def launchBE(be, order):
         lg = Thread(target=launchSpark, args=("LogisticRegression",))
         lg.start()
         sparkappdict = list(spark.getAppDict())
-        while (not sparkappdict) and (len(sparkappdict) != sparkcount):
+        while ((not sparkappdict) or (len(sparkappdict) == sparkcount)):
             sparkappdict = list(spark.getAppDict())
             time.sleep(1)
         print("----------------------------------------", file=f)
@@ -143,7 +143,7 @@ def launchBE(be, order):
         hpcc.start()
         time.sleep(timeout)
         sciappdict = list(sci.getAppDict())
-        while (not sciappdict) and (len(sciappdict) != scicount):
+        while ((not sciappdict) or (len(sciappdict) != scicount)):
             sciappdict = list(sci.getAppDict())
             time.sleep(1)
         print("----------------------------------------", file=f)
