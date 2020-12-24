@@ -89,6 +89,7 @@ def launchBE(be, order):
     with open(path, "a+") as f:
         print('----'*10, file=f)
         print("Curren Launch {}th job {}\n".format(order,be), file=f)
+    f = open(path, 'a+')
     if be == "AI":
         cnncount += 1
         step = cfg.get("AI", 'step')
@@ -151,6 +152,7 @@ def launchBE(be, order):
         print("-----------------------------------------", file=f)
         activeJobInfo[order] = sciappdict[0]
         return "Start Hpcc"
+    f.close()
 
 
 def launch(arriveBe, type):
