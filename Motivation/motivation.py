@@ -50,7 +50,8 @@ def refreshActiveJob():
     activeOrder = []
     for i in app:
         if i in activeJobInfo.values():
-            activeOrder.append(activeJobInfo[i])
+            order = list(activeJobInfo.keys())[list(activeJobInfo.values()).index(i)]
+            activeOrder.append(order)
     return activeOrder
 
 
