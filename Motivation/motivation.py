@@ -99,10 +99,10 @@ def launchBE(be, order):
         while (not cnnappdict) and (len(cnnappdict) != cnncount):
             cnnappdict = list(cnn.getAppDict())
             time.sleep(1)
-        print("----------------------------------------")
-        print(cnncount)
-        print(cnnappdict)
-        print("-----------------------------------------")
+        print("----------------------------------------", file=f)
+        print(cnncount, file=f)
+        print(cnnappdict, file=f)
+        print("-----------------------------------------", file=f)
         activeJobInfo[order] = cnnappdict[0]
         return "Start AI"
     elif be == "KMeans":
@@ -114,10 +114,10 @@ def launchBE(be, order):
         while (not sparkappdict) and (len(sparkappdict) != sparkcount):
             sparkappdict = list(spark.getAppDict())
             time.sleep(1)
-        print("----------------------------------------")
-        print(sparkcount)
-        print(sparkappdict)
-        print("-----------------------------------------")
+        print("----------------------------------------", file=f)
+        print(sparkcount, file=f)
+        print(sparkappdict, file=f)
+        print("-----------------------------------------", file=f)
         activeJobInfo[order] = sparkappdict[0]
         return "Start KMeans"
     elif be == "LogisticRegression":
@@ -129,10 +129,10 @@ def launchBE(be, order):
         while (not sparkappdict) and (len(sparkappdict) != sparkcount):
             sparkappdict = list(spark.getAppDict())
             time.sleep(1)
-        print("----------------------------------------")
-        print(sparkcount)
-        print(sparkappdict)
-        print("-----------------------------------------")
+        print("----------------------------------------", file=f)
+        print(sparkcount, file=f)
+        print(sparkappdict, file=f)
+        print("-----------------------------------------", file=f)
         activeJobInfo[order] = sparkappdict[0]
         return "Start LogisticRegression"
     elif be == "Hpcc":
@@ -145,10 +145,10 @@ def launchBE(be, order):
         while (not sciappdict) and (len(sciappdict) != scicount):
             sciappdict = list(sci.getAppDict())
             time.sleep(1)
-        print("----------------------------------------")
-        print(scicount)
-        print(sciappdict)
-        print("-----------------------------------------")
+        print("----------------------------------------", file=f)
+        print(scicount, file=f)
+        print(sciappdict, file=f)
+        print("-----------------------------------------", file=f)
         activeJobInfo[order] = sciappdict[0]
         return "Start Hpcc"
 
