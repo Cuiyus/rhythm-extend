@@ -82,6 +82,7 @@ def killBE():
 
 def launchBE(be, order):
     path = cfg.get("Experiment", "log")
+    global appbak
     timeout =3
     global launchOrder
     global activeJobInfo
@@ -96,45 +97,51 @@ def launchBE(be, order):
         launchOrder[order] = "AI"
         ai = Thread(target=launchAi, args=(step,))
         ai.start()
-        cnnappdict = list(cnn.getAppDict())
+        cnnappdict = cnn.getAppDict()
         while ((not cnnappdict) or (len(cnnappdict) != cnncount)):
-            cnnappdict = list(cnn.getAppDict())
+            cnnappdict = cnn.getAppDict()
             time.sleep(1)
         print("----------------------------------------", file=f)
         print(cnncount, file=f)
         print(cnnappdict, file=f)
         print("-----------------------------------------", file=f)
-        activeJobInfo[order] = cnnappdict[0]
+        info = cnnappdict - (cnnappdict & appbak)
+        activeJobInfo[order] = list(info)[0]
+        appbak = appbak.union(info)
         return "Start AI"
     elif be == "KMeans":
         sparkcount += 1
         launchOrder[order]= "Kmeans"
         kmeans = Thread(target=launchSpark, args=(be,))
         kmeans.start()
-        sparkappdict = list(spark.getAppDict())
+        sparkappdict = spark.getAppDict()
         while ((not sparkappdict) or (len(sparkappdict) != sparkcount)):
-            sparkappdict = list(spark.getAppDict())
+            sparkappdict = spark.getAppDict()
             time.sleep(1)
         print("----------------------------------------", file=f)
         print(sparkcount, file=f)
         print(sparkappdict, file=f)
         print("-----------------------------------------", file=f)
-        activeJobInfo[order] = sparkappdict[0]
+        info = sparkappdict - (sparkappdict & appbak)
+        activeJobInfo[order] = list(info)[0]
+        appbak = appbak.union(info)
         return "Start KMeans"
     elif be == "LogisticRegression":
         sparkcount += 1
         launchOrder[order] = "LogisticRegression"
         lg = Thread(target=launchSpark, args=("LogisticRegression",))
         lg.start()
-        sparkappdict = list(spark.getAppDict())
+        sparkappdict = spark.getAppDict()
         while ((not sparkappdict) or (len(sparkappdict) != sparkcount)):
-            sparkappdict = list(spark.getAppDict())
+            sparkappdict = spark.getAppDict()
             time.sleep(1)
         print("----------------------------------------", file=f)
         print(sparkcount, file=f)
         print(sparkappdict, file=f)
         print("-----------------------------------------", file=f)
-        activeJobInfo[order] = sparkappdict[0]
+        info = sparkappdict - (sparkappdict & appbak)
+        activeJobInfo[order] = list(info)[0]
+        appbak = appbak.union(info)
         return "Start LogisticRegression"
     elif be == "Hpcc":
         scicount += 1
@@ -142,15 +149,17 @@ def launchBE(be, order):
         hpcc = Thread(target=launchHpcc)
         hpcc.start()
         time.sleep(timeout)
-        sciappdict = list(sci.getAppDict())
+        sciappdict = sci.getAppDict()
         while ((not sciappdict) or (len(sciappdict) != scicount)):
-            sciappdict = list(sci.getAppDict())
+            sciappdict = sci.getAppDict()
             time.sleep(1)
         print("----------------------------------------", file=f)
         print(scicount, file=f)
         print(sciappdict, file=f)
         print("-----------------------------------------", file=f)
-        activeJobInfo[order] = sciappdict[0]
+        info = sciappdict - (sciappdict & appbak)
+        activeJobInfo[order] = list(info)[0]
+        appbak = appbak.union(info)
         return "Start Hpcc"
     f.close()
 
@@ -224,10 +233,13 @@ if __name__ == '__main__':
     # type：loop type：fixed（6）
     loader = launch(arriveBe, cfg.get("Experiment", "type"))
 
+    # 应用集合备份
+    appbak = set()
     # 应用启动计数器
     scicount = 0
     cnncount = 0
     sparkcount = 0
+
     # 清空日志内容
     path = cfg.get("Experiment", "log")
     with open(path, "wb+") as f: f.truncate()
