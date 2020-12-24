@@ -45,8 +45,6 @@ def refreshActiveJob():
     sparkapp = list(spark.getAppDict())
     cnnapp = list(cnn.getAppDict())
     app = sciapp + sparkapp + cnnapp
-    print("refreshActiveJob-- APP:", app)
-    print("activeJobInfo--App", activeJobInfo)
     activeOrder = []
     for i in app:
         if i in activeJobInfo.values():
@@ -135,6 +133,9 @@ def launchBE(be, order):
         while (not sciappdict) and (len(sciappdict) != scicount):
             sciappdict = list(sci.getAppDict())
             time.sleep(1)
+        print("----------------------------------------")
+        print(sciappdict)
+        print("-----------------------------------------")
         activeJobInfo[order] = sciappdict[-1]
         return "Start Hpcc"
 
