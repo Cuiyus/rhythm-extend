@@ -96,7 +96,7 @@ def launchBE(be, order):
         ai = Thread(target=launchAi, args=(step,))
         ai.start()
         cnnappdict = list(cnn.getAppDict())
-        while (not cnnappdict) and (len(cnnappdict != cnncount)):
+        while (not cnnappdict) and (len(cnnappdict) != cnncount):
             cnnappdict = list(cnn.getAppDict())
             time.sleep(1)
         activeJobInfo[order] = cnnappdict[0]
@@ -191,10 +191,7 @@ if __name__ == '__main__':
     tmp = arriveBe.copy()
     rescheduBe = [] # 想要用字典保存任务启动的序号
     launchOrder = {}
-
-
     activeJobInfo = {}
-
     global loader
     # type：loop type：fixed（6）
     loader = launch(arriveBe, cfg.get("Experiment", "type"))
