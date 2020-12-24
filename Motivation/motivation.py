@@ -127,7 +127,7 @@ def launchBE(be, order):
         lg = Thread(target=launchSpark, args=("LogisticRegression",))
         lg.start()
         sparkappdict = list(spark.getAppDict())
-        while ((not sparkappdict) or (len(sparkappdict) == sparkcount)):
+        while ((not sparkappdict) or (len(sparkappdict) != sparkcount)):
             sparkappdict = list(spark.getAppDict())
             time.sleep(1)
         print("----------------------------------------", file=f)
