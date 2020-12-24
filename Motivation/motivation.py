@@ -22,11 +22,7 @@ spark = Pyro4.core.Proxy('PYRO:spark@' + ipAddressServer + ':9090')
 sci = Pyro4.core.Proxy('PYRO:sci@' + ipAddressServer + ':9090')
 cnn = Pyro4.core.Proxy('PYRO:cnn@' + ipAddressServer + ':9090')
 
-# 应用启动计数器
-global scicount, cnncount, sparkcount
-scicount = 0
-cnncount = 0
-sparkcount = 0
+
 
 # 用生成器来实现
 file = r"/home/tank/cys/rhythm/BE/beleader-img/leader-volume/killtime.log"
@@ -200,7 +196,11 @@ if __name__ == '__main__':
     # type：loop type：fixed（6）
     loader = launch(arriveBe, rescheduBe, cfg.get("Experiment", "type"))
 
-    scicount, sparkcount, cnncount = 0, 0, 0
+    # 应用启动计数器
+    global scicount, cnncount, sparkcount
+    scicount = 0
+    cnncount = 0
+    sparkcount = 0
     # 清空日志内容
     path = cfg.get("Experiment", "log")
     with open(path, "wb+") as f: f.truncate()
