@@ -22,6 +22,12 @@ spark = Pyro4.core.Proxy('PYRO:spark@' + ipAddressServer + ':9090')
 sci = Pyro4.core.Proxy('PYRO:sci@' + ipAddressServer + ':9090')
 cnn = Pyro4.core.Proxy('PYRO:cnn@' + ipAddressServer + ':9090')
 
+# 应用启动计数器
+global scicount, cnncount, sparkcount
+scicount = 0
+cnncount = 0
+sparkcount = 0
+
 # 用生成器来实现
 file = r"/home/tank/cys/rhythm/BE/beleader-img/leader-volume/killtime.log"
 
@@ -55,7 +61,6 @@ def killBE():
     kill all BE
     :return:
     '''
-
     orders = refreshActiveJob()
     path = cfg.get("Experiment","log")
     print(orders)
@@ -73,6 +78,7 @@ def killBE():
     subprocess.run(cmd1, shell=True)
     subprocess.run(cmd2, shell=True)
     subprocess.run(cmd3, shell=True)
+    scicount, sparkcount, cnncount = 0, 0, 0
 
 def launchBE(be, order):
     path = cfg.get("Experiment", "log")
@@ -81,43 +87,50 @@ def launchBE(be, order):
         print('----'*10, file=f)
         print("Curren Launch {}th job {}\n".format(order,be), file=f)
     if be == "AI":
+        cnncount += 1
         step = cfg.get("AI", 'step')
         launchOrder[order] = "AI"
         ai = Thread(target=launchAi, args=(step,))
         ai.start()
-        # time.sleep(timeout)
         cnnappdict = list(cnn.getAppDict())
-        while not cnnappdict:
+        while (not cnnappdict) and (len(cnnappdict != cnncount)):
             cnnappdict = list(cnn.getAppDict())
             time.sleep(1)
         activeJobInfo[order] = cnnappdict[0]
         return "Start AI"
     elif be == "KMeans":
+        sparkcount += 1
         launchOrder[order]= "Kmeans"
         kmeans = Thread(target=launchSpark, args=(be,))
         kmeans.start()
-        time.sleep(timeout)
         sparkappdict = list(spark.getAppDict())
-        if sparkappdict:
-            activeJobInfo[order] = sparkappdict[0]
+        while (not sparkappdict) and (len(sparkappdict) != sparkcount):
+            sparkappdict = list(spark.getAppDict())
+            time.sleep(1)
+        activeJobInfo[order] = sparkappdict[0]
         return "Start KMeans"
     elif be == "LogisticRegression":
+        sparkcount += 1
         launchOrder[order] = "LogisticRegression"
         lg = Thread(target=launchSpark, args=("LogisticRegression",))
         lg.start()
-        time.sleep(timeout)
         sparkappdict = list(spark.getAppDict())
-        if sparkappdict:
-            activeJobInfo[order] = sparkappdict[0]
+        while (not sparkappdict) and (len(sparkappdict) != sparkcount):
+            sparkappdict = list(spark.getAppDict())
+            time.sleep(1)
+        activeJobInfo[order] = sparkappdict[0]
         return "Start LogisticRegression"
     elif be == "Hpcc":
+        scicount += 1
         launchOrder[order] = "hpcc"
         hpcc = Thread(target=launchHpcc)
         hpcc.start()
         time.sleep(timeout)
         sciappdict = list(sci.getAppDict())
-        if sciappdict:
-            activeJobInfo[order] = sciappdict[-1]
+        while (not sciappdict) and (len(sciappdict) != scicount):
+            sparkappdict = list(spark.getAppDict())
+            time.sleep(1)
+        activeJobInfo[order] = sciappdict[0]
         return "Start Hpcc"
 
 
