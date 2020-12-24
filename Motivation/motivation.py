@@ -99,6 +99,9 @@ def launchBE(be, order):
         while (not cnnappdict) and (len(cnnappdict) != cnncount):
             cnnappdict = list(cnn.getAppDict())
             time.sleep(1)
+        print("----------------------------------------")
+        print(cnnappdict)
+        print("-----------------------------------------")
         activeJobInfo[order] = cnnappdict[0]
         return "Start AI"
     elif be == "KMeans":
@@ -110,6 +113,9 @@ def launchBE(be, order):
         while (not sparkappdict) and (len(sparkappdict) != sparkcount):
             sparkappdict = list(spark.getAppDict())
             time.sleep(1)
+        print("----------------------------------------")
+        print(sparkappdict)
+        print("-----------------------------------------")
         activeJobInfo[order] = sparkappdict[0]
         return "Start KMeans"
     elif be == "LogisticRegression":
@@ -121,6 +127,9 @@ def launchBE(be, order):
         while (not sparkappdict) and (len(sparkappdict) != sparkcount):
             sparkappdict = list(spark.getAppDict())
             time.sleep(1)
+        print("----------------------------------------")
+        print(sparkappdict)
+        print("-----------------------------------------")
         activeJobInfo[order] = sparkappdict[0]
         return "Start LogisticRegression"
     elif be == "Hpcc":
