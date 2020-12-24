@@ -184,11 +184,16 @@ def getlaunchedBe():
 @app.route("/getActiveBe", methods=["GET",])
 def getActiveBe():
     return jsonify(activeJobInfo)
+
 @app.route("/getActiveOrder", methods=["GET",])
 def getActiveOrder():
     order = refreshActiveJob()
     orderinfo = {"order": order}
     return jsonify(orderinfo)
+@app.route("/getJobNum", methods=["GET",])
+def getJobNum():
+    info = {"sci":scicount, "spark":sparkcount, "cnn":cnncount}
+    return jsonify(info)
 if __name__ == '__main__':
     arriveBe = ["Hpcc", "AI", "KMeans",
               "Hpcc","AI", "LogisticRegression",
