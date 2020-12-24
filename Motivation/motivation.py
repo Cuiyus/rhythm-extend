@@ -200,6 +200,7 @@ if __name__ == '__main__':
     # type：loop type：fixed（6）
     loader = launch(arriveBe, rescheduBe, cfg.get("Experiment", "type"))
 
+    scicount, sparkcount, cnncount = 0, 0, 0
     # 清空日志内容
     path = cfg.get("Experiment", "log")
     with open(path, "wb+") as f: f.truncate()
