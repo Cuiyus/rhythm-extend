@@ -44,11 +44,12 @@ def refreshActiveJob():
     sciapp = list(sci.getAppDict())
     sparkapp = list(spark.getAppDict())
     cnnapp = list(cnn.getAppDict())
-
     app = sciapp + sparkapp + cnnapp
+    print("refreshActiveJob-- APP:", app)
+    print("activeJobInfo--App", activeJobInfo)
     activeOrder = []
     for i in app:
-        if i in activeJobInfo:
+        if i in activeJobInfo.values():
             activeOrder.append(activeJobInfo[i])
     return activeOrder
 
@@ -182,6 +183,11 @@ def getlaunchedBe():
 @app.route("/getActiveBe", methods=["GET",])
 def getActiveBe():
     return jsonify(activeJobInfo)
+@app.route("/getActiveOrder", methods=["GET",])
+def getActiveOrder():
+    order = refreshActiveJob()
+    orderinfo = {"order": order}
+    return jsonify(orderinfo)
 if __name__ == '__main__':
     arriveBe = ["Hpcc", "AI", "KMeans",
               "Hpcc","AI", "LogisticRegression",
