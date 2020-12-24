@@ -85,10 +85,12 @@ def launchBE(be, order):
         launchOrder[order] = "AI"
         ai = Thread(target=launchAi, args=(step,))
         ai.start()
-        time.sleep(timeout)
+        # time.sleep(timeout)
         cnnappdict = list(cnn.getAppDict())
-        if cnnappdict:
-            activeJobInfo[order] = cnnappdict[0]
+        while not cnnappdict:
+            cnnappdict = list(cnn.getAppDict())
+            time.sleep(1)
+        activeJobInfo[order] = cnnappdict[0]
         return "Start AI"
     elif be == "KMeans":
         launchOrder[order]= "Kmeans"
