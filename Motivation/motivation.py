@@ -82,35 +82,35 @@ def launchBE(be, order):
     if be == "AI":
         step = cfg.get("AI", 'step')
         launchOrder[order] = "AI"
+        ai = Thread(target=launchAi, args=(step,))
+        ai.start()
         cnnappdict = list(cnn.getAppDict())
         if cnnappdict:
             activeJobInfo[order] = cnnappdict[0]
-        ai = Thread(target=launchAi, args=(step,))
-        ai.start()
         return "Start AI"
     elif be == "KMeans":
-        sparkappdict = list(spark.getAppDict())
         launchOrder[order]= "Kmeans"
-        if sparkappdict:
-            activeJobInfo[order] = sparkappdict[0]
         kmeans = Thread(target=launchSpark, args=(be,))
         kmeans.start()
-        return "Start KMeans"
-    elif be == "LogisticRegression":
         sparkappdict = list(spark.getAppDict())
-        launchOrder[order] = "LogisticRegression"
         if sparkappdict:
             activeJobInfo[order] = sparkappdict[0]
+        return "Start KMeans"
+    elif be == "LogisticRegression":
+        launchOrder[order] = "LogisticRegression"
         lg = Thread(target=launchSpark, args=("LogisticRegression",))
         lg.start()
+        sparkappdict = list(spark.getAppDict())
+        if sparkappdict:
+            activeJobInfo[order] = sparkappdict[0]
         return "Start LogisticRegression"
     elif be == "Hpcc":
-        sciappdict = list(sci.getAppDict())
         launchOrder[order] = "hpcc"
-        if sciappdict:
-            activeJobInfo[order] = sciappdict[-1]
         hpcc = Thread(target=launchHpcc)
         hpcc.start()
+        sciappdict = list(sci.getAppDict())
+        if sciappdict:
+            activeJobInfo[order] = sciappdict[-1]
         return "Start Hpcc"
 
 
