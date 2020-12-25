@@ -183,8 +183,13 @@ def launch(arriveBe, type):
             order += 1
         order = 0
         while rescheduBe:
-            job = rescheduBe.pop(0)
+            try:
+                job = rescheduBe.pop(0)
+                threading.RLock.acquire()
+            finally:
+                threading.RLock.release()
             yield launchBE(job, order)
+            order += 1
 
 app = Flask(__name__)
 @app.route("/launchmix", methods=["GET",])
@@ -221,11 +226,8 @@ def getJobNum():
     info = {"sci":scicount, "spark":sparkcount, "cnn":cnncount}
     return jsonify(info)
 if __name__ == '__main__':
-    arriveBe = ["Hpcc", "AI", "KMeans",
-              "Hpcc","AI", "LogisticRegression",
-              "Hpcc","AI", "KMeans",
-              "Hpcc", ]
-
+    arriveBe = cfg.get("Experiment", "arriveBe").split(",")
+    arriveBe = list(map(lambda x: x.strip(), arriveBe))
     tmp = arriveBe.copy()
     rescheduBe = [] # 想要用字典保存任务启动的序号
     launchOrder = {}
