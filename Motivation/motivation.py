@@ -183,6 +183,7 @@ def launch(arriveBe, type):
             order += 1
         order = 0
         print("开始启动 ResBe内的任务")
+        print(rescheduBe)
         while rescheduBe:
             try:
                 job = rescheduBe.pop(0)
@@ -191,6 +192,7 @@ def launch(arriveBe, type):
                 threading.RLock.release()
             yield launchBE(job, order)
             order += 1
+        print("End")
 
 app = Flask(__name__)
 @app.route("/launchmix", methods=["GET",])
