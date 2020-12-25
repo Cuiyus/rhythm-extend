@@ -182,6 +182,7 @@ def launch(arriveBe, type):
             yield launchBE(job, order)
             order += 1
         order = 0
+        print("开始启动 ResBe内的任务")
         while rescheduBe:
             try:
                 job = rescheduBe.pop(0)
