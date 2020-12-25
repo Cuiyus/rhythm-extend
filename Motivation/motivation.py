@@ -199,6 +199,7 @@ def launchmix():
         return next(loader)
     except StopIteration:
         loader = launch(arriveBe, cfg.get("Experiment", "type"))
+        return "重新读取当前任务队列"
 
 @app.route("/killall", methods=["GET",])
 def killall():
