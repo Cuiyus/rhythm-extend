@@ -194,10 +194,12 @@ def launch(arriveBe, type):
 app = Flask(__name__)
 @app.route("/launchmix", methods=["GET",])
 def launchmix():
+    global loader
     try:
         return next(loader)
     except StopIteration:
-        return "没有后续任务待启动"
+        loader = launch(arriveBe, cfg.get("Experiment", "type"))
+
 @app.route("/killall", methods=["GET",])
 def killall():
     k = Thread(target=killBE)
@@ -232,7 +234,6 @@ if __name__ == '__main__':
     rescheduBe = [] # 想要用字典保存任务启动的序号
     launchOrder = {}
     activeJobInfo = {}
-    global loader
     # type：loop type：fixed（6）
     loader = launch(arriveBe, cfg.get("Experiment", "type"))
 
