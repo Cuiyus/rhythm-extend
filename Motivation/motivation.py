@@ -181,10 +181,10 @@ def launch(arriveBe, type):
             job = arriveBe.pop(0)
             yield launchBE(job, order)
             order += 1
+        order = 0
         while rescheduBe:
-            minorder = min(rescheduBe.keys())
-            job = rescheduBe.pop(minorder)[0]
-            yield launchBE(job, minorder)
+            job = rescheduBe.pop(0)
+            yield launchBE(job, order)
 
 app = Flask(__name__)
 @app.route("/launchmix", methods=["GET",])
