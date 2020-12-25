@@ -185,11 +185,8 @@ def launch(arriveBe, type):
         print("开始启动 ResBe内的任务")
         print(rescheduBe)
         while rescheduBe:
-            try:
-                job = rescheduBe.pop(0)
-                threading.RLock.acquire()
-            finally:
-                threading.RLock.release()
+            print("1----------------------------------1")
+            job = rescheduBe.pop(0)
             yield launchBE(job, order)
             order += 1
         print("End")
