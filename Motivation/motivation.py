@@ -50,6 +50,7 @@ def refreshActiveJob():
         if i in activeJobInfo.values():
             order = list(activeJobInfo.keys())[list(activeJobInfo.values()).index(i)]
             activeOrder.append(order)
+    activeOrder.sort()
     return activeOrder
 
 
