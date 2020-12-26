@@ -22,6 +22,7 @@ class cnnProgress(object):
         self.appProgress = []
 
     def getAppDict(self):
+        self.recordAppDict()
         return self.appDict
 
     def refreshAppDict(self, data):
@@ -41,24 +42,24 @@ class cnnProgress(object):
             self.lock.release()
 
     def recordAppDict(self):
-        while True:
-            cmd = ["docker", "exec", "-i", "Tensor-Worker-1", "bash", "/root/outins.sh"]
-            info = subprocess.run(cmd, stdout=subprocess.PIPE)
-            insInfo = info.stdout.decode('utf-8').split('\n')
-            appinfo = set()
-            if len(insInfo) == 0:
-                print("没有正在运行的训练任务")
-                return None
-            else:
-                for d in insInfo:
-                    insIdPat = re.compile(r'TCP \*:(\d{4,5}) \(LISTEN\)') # 端口号
-                    insPidPat = re.compile(r'tf_cnn_be (\d{3,5}) root') # 进程ID
-                    insId = insIdPat.findall(d)
-                    insPid = insPidPat.findall(d)
-                    if len(insId) != 0 and len(insPid) != 0:
-                        appinfo.add((insId[0], insPid[0]))
-            # print(appinfo)
-            self.refreshAppDict(appinfo)
+        cmd = ["docker", "exec", "-i", "Tensor-Worker-1", "bash", "/root/outins.sh"]
+        info = subprocess.run(cmd, stdout=subprocess.PIPE)
+        insInfo = info.stdout.decode('utf-8').split('\n')
+        appinfo = set()
+        if len(insInfo) == 0:
+            print("没有正在运行的训练任务")
+            return None
+        else:
+            for d in insInfo:
+                insIdPat = re.compile(r'TCP \*:(\d{4,5}) \(LISTEN\)') # 端口号
+                insPidPat = re.compile(r'tf_cnn_be (\d{3,5}) root') # 进程ID
+                insId = insIdPat.findall(d)
+                insPid = insPidPat.findall(d)
+                if len(insId) != 0 and len(insPid) != 0:
+                    appinfo.add((insId[0], insPid[0]))
+        # print(appinfo)
+        self.refreshAppDict(appinfo)
+        return appinfo
 
     def getProgress(self, app):
         path = "/home/tank/cys/rhythm/BE/cnn-bench/CnnBenchProgress/cnn_appinfo/{}.txt".format(app[0])
@@ -68,18 +69,19 @@ class cnnProgress(object):
 
 
     def Priority(self):
-        while True:
-            self.appProgress = []
-            progress_thread = []
-            for app in list(self.appDict):
-                t = threading.Thread(target=self.getProgress, args=(app,))
-                t.start()
-                progress_thread.append(t)
-            for p in progress_thread:
-                p.join()
+        self.recordAppDict()
+        self.appProgress = []
+        progress_thread = []
+        for app in list(self.appDict):
+            t = threading.Thread(target=self.getProgress, args=(app,))
+            t.start()
+            progress_thread.append(t)
+        for p in progress_thread:
+            p.join()
+        self.refreshPriority()
+        self.priority.sort(key=lambda x: x[1], reverse=False)
+        return self.priority
 
-            self.refreshPriority()
-            self.priority.sort(key=lambda x: x[1], reverse=False)
 
     def run(self):
         updateappDict = threading.Thread(target=self.recordAppDict)
@@ -128,7 +130,7 @@ app = Flask(__name__)
 @app.route("/getPriority", methods=["GET"])
 def getPriority():
     job_order = {}
-    if cnn.priority:
+    if cnn.Priority():
         for i, app in enumerate(cnn.priority):
             job_order[i] = app
             print(app)

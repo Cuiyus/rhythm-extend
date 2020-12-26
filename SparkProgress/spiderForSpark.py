@@ -132,90 +132,6 @@ class sparkProgress(object):
         self.priority.sort(key=lambda x: x[1], reverse=False)
         return self.priority
 
-    # def getAppID_Port(self):
-    #     while True:
-    #         cmd = ["docker", "exec", "-i", "Spark-1", "yarn", "application", "-list"]
-    #         yarninfo = subprocess.run(cmd, stdout=subprocess.PIPE,stderr=subprocess.DEVNULL)
-    #         info = yarninfo.stdout.decode('utf-8').split('\n')
-    #         if len(info) > 2:
-    #             data = info[2:]
-    #             appinfo = set()
-    #             for d in data:
-    #                 appnamePat = re.compile(r"application_\d{13}_\d{4}")
-    #                 appName = re.findall(appnamePat, d)
-    #                 appPortPat = re.compile(r"http://master:(\d{4})")
-    #                 appPort = re.findall(appPortPat, d)
-    #                 # print(appId, appPort)
-    #                 try:
-    #                     if len(appName) != 0 and len(appPort) != 0:
-    #                         # self.appDict[appId[0]] = appPort[0]
-    #                         appinfo.add((appName[0], appPort[0]))
-    #                 finally:
-    #                     pass
-    #             self.reflashAppDict(appinfo)
-    #         time.sleep(2)
-
-
-
-
-    # def getProgress(self, app):
-    #     # 使用了爬虫解析4040的spark页面
-    #     '''
-    #     :param res:
-    #     :return:获取单个任务的工作进度
-    #     '''
-    #     url = "http://{0}:{1}".format(self.ip, app[1])
-    #     try:
-    #         res = requests.get(url)
-    #         res.raise_for_status()
-    #         res.encoding = res.apparent_encoding
-    #     except requests.exceptions.HTTPError:
-    #         # print("{} 任务未完成初始化 -- getProgress".format(app[0]))
-    #         return None
-    #     except requests.exceptions.ConnectionError:
-    #         print("任务：{} --- 连接错误".format(app[0]))
-    #         return None
-    #     progress = {}
-    #     running_job, compile_job, total_job = 0, 0, 0
-    #     soup = BeautifulSoup(res.text.encode("utf-8"), 'lxml')
-    #     try:
-    #         activateJobInfo = soup.find("table", attrs={'id': "activeJob-table"}). \
-    #             select('span[style="text-align:center; position:absolute; width:100%; left:0;"]')
-    #         task_pat = re.compile(r'(\d{1,3})/(\d{1,3})')
-    #         runningJobTaskInfo = task_pat.findall(activateJobInfo[0].string)[0]
-    #         # completedJobInfo = soup.find("table", attrs={'id': "completedJob-table"}). \
-    #         #     select('span[style="text-align:center; position:absolute; width:100%; left:0;"]')
-    #         # completedJobTaskInfo = task_pat.findall(completedJobInfo[0].string)
-    #         # for _ in completedJobTaskInfo:
-    #         #     total_job += int(_[0])
-    #         # 已运行的Job所有Task之和
-    #         total_job += int(runningJobTaskInfo[1])
-    #         running_job = int(runningJobTaskInfo[0])
-    #         progress["progress"] = running_job / int(runningJobTaskInfo[1])
-    #         self.appProgress.append([app[0], progress["progress"], "spark"])
-    #     except AttributeError as err:
-    #         # print("completedJobInfo 未获取",err)
-    #         pass
-    #     except ZeroDivisionError as err:
-    #         print("The spark Job提交后未完成任务初始化，Total Task= 0")
-    #         self.appProgress.append([app[0], 0.0, "spark"])
-        # return progress
-
-    # def Priority(self):
-    #
-    #         progress_thread = []
-    #         self.appProgress = []
-    #         for app in list(self.appDict):
-    #             t = threading.Thread(target=self.getProgress, args=(app,))
-    #             t.start()
-    #             progress_thread.append(t)
-    #         for t in progress_thread:
-    #             t.join()
-    #         self.reflashPriority()
-    #         self.priority.sort(key=lambda x: x[1], reverse=False)
-    #         time.sleep(2)
-
-
     # getStageID，getRunningTask，getCoarseGrainedExecutorPort 都是针对单个spark application的类方法
 
     def getStageID(self, app, port=18080):
@@ -320,10 +236,6 @@ class sparkProgress(object):
             self.reflashAppExecutor()
 
     def run(self):
-        # updateappDict = threading.Thread(target=self.getAppID_Port)
-        # updateappDict.start()
-        # priority = threading.Thread(target=self.Priority)
-        # priority.start()
         updateappExecutor = threading.Thread(target=self.getAllExecutor)
         updateappExecutor.start()
 
