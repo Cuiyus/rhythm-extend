@@ -59,6 +59,7 @@ class cnnProgress(object):
                     appinfo.add((insId[0], insPid[0]))
         # print(appinfo)
         self.refreshAppDict(appinfo)
+        print(appinfo)
         return appinfo
 
     def getProgress(self, app):
