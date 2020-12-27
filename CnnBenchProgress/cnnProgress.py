@@ -150,7 +150,7 @@ def getActiveJob():
 if __name__ == '__main__':
     cnn = cnnProgress()
     print("Start cnn Monitor")
-    cnn.run()
+    # cnn.run()
     app.run(host="0.0.0.0",port=10088)
 
 
