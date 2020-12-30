@@ -274,15 +274,6 @@ def runkill():
         killer = HpcKiller(job=killjob)
         killer.killScimark()
         return "kill Hpc Job {}".format(killjob)
-def killBE():
-    '''
-    kill all BE
-    :return:
-    '''
-    cmd = "docker exec -i Tensor-Worker-1 bash /home/tank/killAll.sh && " \
-          "docker exec -i Spark-1 bash /home/tank/killAll.sh && " \
-          "docker exec -i Scimark bash /home/tank/killAll.sh"
-    subprocess.run(cmd, shell=True)
 
 @app.route("/killrandom",methods=["GET"])
 def killrandom():
@@ -301,6 +292,11 @@ def killrandom():
         killer.killScimark()
         return "kill Hpc Job {}".format(killjob)
 
+@app.route("/killall", methods=["GET",])
+def killall():
+    k = threading.Thread(target=l.killBE)
+    k.start()
+    return "Start Kill"
 
 
 if __name__ == '__main__':
