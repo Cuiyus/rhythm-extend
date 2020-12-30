@@ -88,7 +88,7 @@ class launcher(object):
             self.sparkcount += 1
             self.launchOrder[order] = "Kmeans"
             print(be)
-            kmeans = Thread(target=self.launchSpark(), args=(be,))
+            kmeans = Thread(target=self.launchSpark, args=(be,))
             kmeans.start()
             sparkappdict = self.spark.getAppDict()
             while ((not sparkappdict) or (len(sparkappdict) != self.sparkcount)):
