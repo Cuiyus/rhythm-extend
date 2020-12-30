@@ -27,11 +27,10 @@ class MyTimer(object):
     def __init__(self, testcode):
         self.testcode = testcode
 
-    def __enter__(self, funcname):
+    def __enter__(self):
         self.t0 = time.time()
-        self.func = funcname
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         path = "./perftime.txt"
         with open(path, "a+") as f:
-            print('[finished, {} spent time: {time:.2f}s]'.format(self.func, time = time.time() - self.t0), file=f)
+            print('[finished, {} spent time: {time:.2f}s]'.format(self.testcode, time = time.time() - self.t0), file=f)
