@@ -234,6 +234,8 @@ def getActiveOrder():
 def getJobNum():
     info = {"sci":l.scicount, "spark":l.sparkcount, "cnn":l.cnncount}
     return jsonify(info)
+
+
 # Get ActiveJob
 @app.route('/getSparkJob',methods=["GET"])
 def getSparkJob():

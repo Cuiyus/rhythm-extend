@@ -1,14 +1,17 @@
 """有序启动混合类型BE"""
 import subprocess
-from flask import Flask, jsonify, request, Response
 from threading import Thread
 import time, sys
 import configparser
-import Pyro4, json
 from copy import deepcopy
 import logging, threading
+sys.path.append(r"/home/tank/cys/rhythm/BE/rhythm-extend")
+# 日志
 logging.basicConfig(level = logging.INFO, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# 函数性能测试
+from Preftest.perftime import func_timer, MyTimer
 # 读取配置文件
 def readConfig():
     cfg = configparser.ConfigParser()
@@ -72,17 +75,19 @@ class launcher(object):
             self.launchOrder[order] = "AI"
             ai = Thread(target=self.launchAi, args=(step,))
             ai.start()
-            cnnappdict = self.cnn.getAppDict()
-            while ((not cnnappdict) or (len(cnnappdict) != self.cnncount)):
+            with MyTimer("cnn更新应用信息") as t:
                 cnnappdict = self.cnn.getAppDict()
-                time.sleep(timeout)
+                while ((not cnnappdict) or (len(cnnappdict) != self.cnncount)):
+                    cnnappdict = self.cnn.getAppDict()
+                    time.sleep(timeout)
             print("----------------------------------------", file=f)
             print(self.cnncount, file=f)
             print(cnnappdict, file=f)
             print("-----------------------------------------", file=f)
-            info = cnnappdict - (cnnappdict & self.appbak)
-            self.activeJobInfo[order] = list(info)[0]
-            self.appbak = self.appbak.union(info)
+            with MyTimer("cnn序号应用信息相匹配") as t:
+                info = cnnappdict - (cnnappdict & self.appbak)
+                self.activeJobInfo[order] = list(info)[0]
+                self.appbak = self.appbak.union(info)
             return "Start AI"
         elif be == "KMeans":
             self.sparkcount += 1
@@ -90,17 +95,19 @@ class launcher(object):
             print(be)
             kmeans = Thread(target=self.launchSpark, args=(be,))
             kmeans.start()
-            sparkappdict = self.spark.getAppDict()
-            while ((not sparkappdict) or (len(sparkappdict) != self.sparkcount)):
+            with MyTimer("Kmeans更新应用信息") as t:
                 sparkappdict = self.spark.getAppDict()
-                time.sleep(timeout)
+                while ((not sparkappdict) or (len(sparkappdict) != self.sparkcount)):
+                    sparkappdict = self.spark.getAppDict()
+                    time.sleep(timeout)
             print("----------------------------------------", file=f)
             print(self.sparkcount, file=f)
             print(sparkappdict, file=f)
             print("-----------------------------------------", file=f)
-            info = sparkappdict - (sparkappdict & self.appbak)
-            self.activeJobInfo[order] = list(info)[0]
-            self.appbak = self.appbak.union(info)
+            with MyTimer("Kmeans序号应用信息相匹配"):
+                info = sparkappdict - (sparkappdict & self.appbak)
+                self.activeJobInfo[order] = list(info)[0]
+                self.appbak = self.appbak.union(info)
             return "Start KMeans"
         elif be == "LogisticRegression":
             self.sparkcount += 1
@@ -125,17 +132,19 @@ class launcher(object):
             hpcc = Thread(target=self.launchHpcc)
             hpcc.start()
             time.sleep(timeout)
-            sciappdict = self.sci.getAppDict()
-            while ((not sciappdict) or (len(sciappdict) != self.scicount)):
+            with MyTimer("Hpcc更新应用信息"):
                 sciappdict = self.sci.getAppDict()
-                time.sleep(1)
+                while ((not sciappdict) or (len(sciappdict) != self.scicount)):
+                    sciappdict = self.sci.getAppDict()
+                    time.sleep(1)
             print("----------------------------------------", file=f)
             print(self.scicount, file=f)
             print(sciappdict, file=f)
             print("-----------------------------------------", file=f)
-            info = sciappdict - (sciappdict & self.appbak)
-            self.activeJobInfo[order] = list(info)[0]
-            self.appbak = self.appbak.union(info)
+            with MyTimer("Hpcc序号应用信息相匹配"):
+                info = sciappdict - (sciappdict & self.appbak)
+                self.activeJobInfo[order] = list(info)[0]
+                self.appbak = self.appbak.union(info)
             return "Start Hpcc"
         f.close()
 
