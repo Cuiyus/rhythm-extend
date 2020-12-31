@@ -75,8 +75,9 @@ class launcher(object):
             self.launchOrder[order] = "AI"
             ai = Thread(target=self.launchAi, args=(step,))
             ai.start()
-            with MyTimer("cnn更新应用信息") as t:
+            with MyTimer("获取Cnn任务列表"):
                 cnnappdict = self.cnn.getAppDict()
+            with MyTimer("cnn更新应用信息") as t:
                 while ((not cnnappdict) or (len(cnnappdict) != self.cnncount)):
                     cnnappdict = self.cnn.getAppDict()
                     time.sleep(timeout)
@@ -95,8 +96,9 @@ class launcher(object):
             print(be)
             kmeans = Thread(target=self.launchSpark, args=(be,))
             kmeans.start()
-            with MyTimer("Kmeans更新应用信息") as t:
+            with MyTimer("Kmeans获取任务列表"):
                 sparkappdict = self.spark.getAppDict()
+            with MyTimer("Kmeans更新应用信息") as t:
                 while ((not sparkappdict) or (len(sparkappdict) != self.sparkcount)):
                     sparkappdict = self.spark.getAppDict()
                     time.sleep(timeout)
@@ -114,10 +116,12 @@ class launcher(object):
             self.launchOrder[order] = "LogisticRegression"
             lg = Thread(target=self.launchSpark, args=("LogisticRegression",))
             lg.start()
-            sparkappdict = self.spark.getAppDict()
-            while ((not sparkappdict) or (len(sparkappdict) != self.sparkcount)):
+            with MyTimer("LogisticRegression获取任务列表"):
                 sparkappdict = self.spark.getAppDict()
-                time.sleep(1)
+            with MyTimer("LogisticRegression更新应用信息"):
+                while ((not sparkappdict) or (len(sparkappdict) != self.sparkcount)):
+                    sparkappdict = self.spark.getAppDict()
+                    time.sleep(1)
             print("----------------------------------------", file=f)
             print(self.sparkcount, file=f)
             print(sparkappdict, file=f)
