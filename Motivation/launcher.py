@@ -70,13 +70,13 @@ class launcher(object):
         f = open(self.logpath, 'a+')
         if be == "AI":
             app_nums = self.cnncount
-            logger.info("App_num{} self.cnncount {}".format(app_nums, self.cnncount))
+            logger.info("App_num {} self.cnncount {}".format(app_nums, self.cnncount))
         elif be == "KMeans" or "LogisticRegression":
             app_nums = self.sparkcount
-            logger.info("App_num{} self.count {}".format(app_nums, self.sparkcount))
+            logger.info("App_num {} self.count {}".format(app_nums, self.sparkcount))
         elif be == "Hpcc":
             app_nums = self.scicount
-            logger.info("App_num{} self.count {}".format(app_nums, self.scicount))
+            logger.info("App_num {} self.count {}".format(app_nums, self.scicount))
 
         with MyTimer("获取{}任务列表".format(be)):
             appdict = job.getAppDict()
@@ -85,7 +85,7 @@ class launcher(object):
             i = 0
             while ((not appdict) or (len(appdict) != app_nums)):
                 i += 1
-                appdict = job.getAppDt()
+                appdict = job.getAppDict()
                 logger.info("App_Nums:数量{} ".format(app_nums))
                 logger.info("第{}次{}信息拉取：{}".format(i, type, appdict))
                 time.sleep(timeout)
