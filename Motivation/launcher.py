@@ -80,6 +80,7 @@ class launcher(object):
             with MyTimer("cnn更新应用信息") as t:
                 i = 0
                 while ((not cnnappdict) or (len(cnnappdict) != self.cnncount)):
+                    i+=1
                     cnnappdict = self.cnn.getAppDict()
                     logger.info("第{}次Cnn信息拉取：{}".format(i, cnnappdict))
                     time.sleep(timeout)
@@ -103,6 +104,7 @@ class launcher(object):
             with MyTimer("Kmeans更新应用信息") as t:
                 i = 0
                 while ((not sparkappdict) or (len(sparkappdict) != self.sparkcount)):
+                    i += 1
                     sparkappdict = self.spark.getAppDict()
                     logger.info("第{}次Kmeans信息拉取：{}".format(i, sparkappdict))
                     time.sleep(timeout)
@@ -125,6 +127,7 @@ class launcher(object):
             with MyTimer("LogisticRegression更新应用信息"):
                 i = 0
                 while ((not sparkappdict) or (len(sparkappdict) != self.sparkcount)):
+                    i += 1
                     sparkappdict = self.spark.getAppDict()
                     logger.info("第{}次LogisticRegression信息拉取：{}".format(i, sparkappdict))
                     time.sleep(1)
