@@ -69,6 +69,7 @@ class launcher(object):
         f = open(self.logpath, 'a+')
         if type == "AI":
             app_nums = self.cnncount
+            logger.info("App_num{} self.cnncount {}".format(app_nums))
         elif type == "KMeans" or "LogisticRegression":
             app_nums = self.sparkcount
         elif type == "Hpcc":
@@ -96,7 +97,6 @@ class launcher(object):
         f.close()
 
     def launchBE(self, be, order):
-        timeout = 1
         with open(self.logpath, "a+") as f:
             print('----' * 10, file=f)
             print("Curren Launch {}th job {}\n".format(order, be), file=f)
