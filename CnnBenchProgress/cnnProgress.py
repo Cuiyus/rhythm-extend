@@ -51,8 +51,10 @@ class cnnProgress(object):
             return None
         else:
             for d in insInfo:
-                insIdPat = re.compile(r'TCP \*:(\d{4,5}) \(LISTEN\)') # 端口号
-                insPidPat = re.compile(r'tf_cnn_be (\d{3,5}) root') # 进程ID
+                #insIdPat = re.compile(r'TCP \*:(\d{4,5}) \(LISTEN\)') # 端口号
+                #insPidPat = re.compile(r'tf_cnn_be (\d{3,5}) root') # 进程ID
+                insIdPat = re.compile(r'0.0.0.0.0:(\d{4,5})')  # 端口号
+                insPidPat = re.compile(r'(\d{3,5})/python')  # 进程ID
                 insId = insIdPat.findall(d)
                 insPid = insPidPat.findall(d)
                 if len(insId) != 0 and len(insPid) != 0:
