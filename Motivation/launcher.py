@@ -82,6 +82,7 @@ class launcher(object):
             while ((not appdict) or (len(appdict) != app_nums)):
                 i += 1
                 appdict = job.getAppDict()
+                logger.info("应用数量{}".format(app_nums))
                 logger.info("第{}次{}信息拉取：{}".format(i, type, appdict))
                 time.sleep(timeout)
         print("----------------------------------------", file=f)
