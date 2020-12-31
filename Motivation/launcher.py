@@ -64,26 +64,29 @@ class launcher(object):
 
     def reload(self):
         self.loader = self.load()
-    def record(self, type, job, order):
+
+    def record(self, be, job, order):
         timeout = 1
         f = open(self.logpath, 'a+')
-        if type == "AI":
+        if be == "AI":
             app_nums = self.cnncount
-            logger.info("App_num{} self.cnncount {}".format(app_nums))
-        elif type == "KMeans" or "LogisticRegression":
+            logger.info("App_num{} self.cnncount {}".format(app_nums, self.cnncount))
+        elif be == "KMeans" or "LogisticRegression":
             app_nums = self.sparkcount
-        elif type == "Hpcc":
+            logger.info("App_num{} self.count {}".format(app_nums, self.sparkcount))
+        elif be == "Hpcc":
             app_nums = self.scicount
+            logger.info("App_num{} self.count {}".format(app_nums, self.scicount))
 
-        with MyTimer("获取{}任务列表".format(type)):
+        with MyTimer("获取{}任务列表".format(be)):
             appdict = job.getAppDict()
-            logger.info("第0次{}信息拉取：{}".format(type, appdict))
+            logger.info("第0次{}信息拉取：{}".format(be, appdict))
         with MyTimer("{}更新应用信息".format(type)):
             i = 0
             while ((not appdict) or (len(appdict) != app_nums)):
                 i += 1
-                appdict = job.getAppDict()
-                logger.info("应用数量{}".format(app_nums))
+                appdict = job.getAppDt()
+                logger.info("App_Nums:数量{} ".format(app_nums))
                 logger.info("第{}次{}信息拉取：{}".format(i, type, appdict))
                 time.sleep(timeout)
         print("----------------------------------------", file=f)
