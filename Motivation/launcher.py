@@ -78,8 +78,10 @@ class launcher(object):
             with MyTimer("获取Cnn任务列表"):
                 cnnappdict = self.cnn.getAppDict()
             with MyTimer("cnn更新应用信息") as t:
+                i = 0
                 while ((not cnnappdict) or (len(cnnappdict) != self.cnncount)):
                     cnnappdict = self.cnn.getAppDict()
+                    logger.info("第{}次Cnn信息拉取：{}".format(i, cnnappdict))
                     time.sleep(timeout)
             print("----------------------------------------", file=f)
             print(self.cnncount, file=f)
@@ -99,8 +101,10 @@ class launcher(object):
             with MyTimer("Kmeans获取任务列表"):
                 sparkappdict = self.spark.getAppDict()
             with MyTimer("Kmeans更新应用信息") as t:
+                i = 0
                 while ((not sparkappdict) or (len(sparkappdict) != self.sparkcount)):
                     sparkappdict = self.spark.getAppDict()
+                    logger.info("第{}次Kmeans信息拉取：{}".format(i, sparkappdict))
                     time.sleep(timeout)
             print("----------------------------------------", file=f)
             print(self.sparkcount, file=f)
@@ -119,8 +123,10 @@ class launcher(object):
             with MyTimer("LogisticRegression获取任务列表"):
                 sparkappdict = self.spark.getAppDict()
             with MyTimer("LogisticRegression更新应用信息"):
+                i = 0
                 while ((not sparkappdict) or (len(sparkappdict) != self.sparkcount)):
                     sparkappdict = self.spark.getAppDict()
+                    logger.info("第{}次LogisticRegression信息拉取：{}".format(i, sparkappdict))
                     time.sleep(1)
             print("----------------------------------------", file=f)
             print(self.sparkcount, file=f)
@@ -154,15 +160,15 @@ class launcher(object):
 
     def launchAi(self, step):
         cmd = "docker exec -i Tensor-Worker-1 bash /home/tank/addBeCopy_cnn.sh {}".format(step)
-        subprocess.run(cmd, shell=True)
+        subprocess.run(cmd, shell=True, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
 
     def launchSpark(self, be):
         cmd = "docker exec -i Spark-1 bash /root/spark-bench-legacy/bin/submit_job.sh {}".format(be)
-        subprocess.run(cmd, shell=True)
+        subprocess.run(cmd, shell=True, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
 
     def launchHpcc(self):
         cmd = "docker exec -i Scimark bash /home/tank/addBeCopy_cpu.sh  "
-        subprocess.run(cmd, shell=True)
+        subprocess.run(cmd, shell=True, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
 
     def refreshActiveJob(self):
         sciapp = list(self.sci.getAppDict())
@@ -194,7 +200,7 @@ class launcher(object):
         cmd1 = "docker exec -i Tensor-Worker-1 bash /home/tank/killAll.sh "
         cmd2 = "docker exec -i Spark-1 bash /home/tank/killAll.sh"
         cmd3 = "docker exec -i Scimark bash /home/tank/killAll.sh"
-        subprocess.run(cmd1, shell=True)
-        subprocess.run(cmd2, shell=True)
-        subprocess.run(cmd3, shell=True)
+        subprocess.run(cmd1, shell=True, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+        subprocess.run(cmd2, shell=True, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+        subprocess.run(cmd3, shell=True, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
         self.scicount, self.sparkcount, self.cnncount = 0, 0, 0
