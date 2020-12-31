@@ -75,12 +75,12 @@ class launcher(object):
             app_nums = self.scicount
 
         with MyTimer("获取{}任务列表".format(type)):
-            appdict = self.job.getAppDict()
+            appdict = job.getAppDict()
         with MyTimer("{}更新应用信息".format(type)):
             i = 0
             while ((not appdict) or (len(appdict) != app_nums)):
                 i += 1
-                appdict = self.job.getAppDict()
+                appdict = job.getAppDict()
                 logger.info("第{}次{}信息拉取：{}".format(i,type, appdict))
                 time.sleep(timeout)
         print("----------------------------------------", file=f)
