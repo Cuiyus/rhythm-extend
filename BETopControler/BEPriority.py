@@ -306,6 +306,7 @@ if __name__ == '__main__':
     # rmi = threading.Thread(target=rmiServer, args=(sci, spark, cnn, cfg))
     # rmi.start()
     # print("rmi服务启动")
+
     Monitorinit()
     print("Flask启动")
     app.run(host="0.0.0.0", port=10089)

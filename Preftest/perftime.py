@@ -1,5 +1,11 @@
 from functools import wraps
 import time
+import configparser
+def readConfig():
+    cfg = configparser.ConfigParser()
+    cfgname = "../config/config.ini"
+    cfg.read(cfgname, encoding='utf-8')
+    return cfg
 def func_timer(function):
     '''
     用装饰器实现函数计时
@@ -26,11 +32,12 @@ class MyTimer(object):
     '''
     def __init__(self, testcode):
         self.testcode = testcode
+        self.cfg = readConfig()
 
     def __enter__(self):
         self.t0 = time.time()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        path = "./perftime.txt"
+        path = self.cfg.get("Experiment", "perf")
         with open(path, "a+") as f:
             print('[finished, {} spent time: {time:.2f}s]'.format(self.testcode, time = time.time() - self.t0), file=f)

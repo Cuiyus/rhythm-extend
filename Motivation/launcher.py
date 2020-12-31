@@ -38,6 +38,8 @@ class launcher(object):
         self.activeJobInfo = {}
         self.appbak = set()
 
+        with open(self.logpath, "wb+") as f: f.truncate()
+
 
     def load(self):
         if self.exptype == "loop":
@@ -62,6 +64,33 @@ class launcher(object):
 
     def reload(self):
         self.loader = self.load()
+    def record(self, type, job, order):
+        timeout = 1
+        f = open(self.logpath, 'a+')
+        if type == "AI":
+            app_nums = self.cnncount
+        elif type == "KMeans" or "LogisticRegression":
+            app_nums = self.sparkcount
+        elif type == "Hpcc":
+            app_nums = self.scicount
+
+        with MyTimer("获取{}任务列表".format(type)):
+            appdict = self.job.getAppDict()
+        with MyTimer("{}更新应用信息".format(type)):
+            i = 0
+            while ((not appdict) or (len(appdict) != app_nums)):
+                i += 1
+                appdict = self.job.getAppDict()
+                logger.info("第{}次{}信息拉取：{}".format(i,type, appdict))
+                time.sleep(timeout)
+        print("----------------------------------------", file=f)
+        print(app_nums, file=f)
+        print(appdict, file=f)
+        print("-----------------------------------------", file=f)
+        with MyTimer("cnn序号应用信息相匹配"):
+            info = appdict - (appdict & self.appbak)
+            self.activeJobInfo[order] = list(info)[0]
+            self.appbak = self.appbak.union(info)
 
     def launchBE(self, be, order):
         timeout = 1
@@ -75,89 +104,32 @@ class launcher(object):
             self.launchOrder[order] = "AI"
             ai = Thread(target=self.launchAi, args=(step,))
             ai.start()
-            with MyTimer("获取Cnn任务列表"):
-                cnnappdict = self.cnn.getAppDict()
-            with MyTimer("cnn更新应用信息") as t:
-                i = 0
-                while ((not cnnappdict) or (len(cnnappdict) != self.cnncount)):
-                    i+=1
-                    cnnappdict = self.cnn.getAppDict()
-                    logger.info("第{}次Cnn信息拉取：{}".format(i, cnnappdict))
-                    time.sleep(timeout)
-            print("----------------------------------------", file=f)
-            print(self.cnncount, file=f)
-            print(cnnappdict, file=f)
-            print("-----------------------------------------", file=f)
-            with MyTimer("cnn序号应用信息相匹配") as t:
-                info = cnnappdict - (cnnappdict & self.appbak)
-                self.activeJobInfo[order] = list(info)[0]
-                self.appbak = self.appbak.union(info)
+            cnnrecord = Thread(target=self.record, args=(be, self.cnn, order))
+            cnnrecord.start()
             return "Start AI"
         elif be == "KMeans":
             self.sparkcount += 1
             self.launchOrder[order] = "Kmeans"
-            print(be)
             kmeans = Thread(target=self.launchSpark, args=(be,))
             kmeans.start()
-            with MyTimer("Kmeans获取任务列表"):
-                sparkappdict = self.spark.getAppDict()
-            with MyTimer("Kmeans更新应用信息") as t:
-                i = 0
-                while ((not sparkappdict) or (len(sparkappdict) != self.sparkcount)):
-                    i += 1
-                    sparkappdict = self.spark.getAppDict()
-                    logger.info("第{}次Kmeans信息拉取：{}".format(i, sparkappdict))
-                    time.sleep(timeout)
-            print("----------------------------------------", file=f)
-            print(self.sparkcount, file=f)
-            print(sparkappdict, file=f)
-            print("-----------------------------------------", file=f)
-            with MyTimer("Kmeans序号应用信息相匹配"):
-                info = sparkappdict - (sparkappdict & self.appbak)
-                self.activeJobInfo[order] = list(info)[0]
-                self.appbak = self.appbak.union(info)
+            kmeansrecord = Thread(target=self.record, args=(be, self.spark, order))
+            kmeansrecord.start()
             return "Start KMeans"
         elif be == "LogisticRegression":
             self.sparkcount += 1
             self.launchOrder[order] = "LogisticRegression"
             lg = Thread(target=self.launchSpark, args=("LogisticRegression",))
             lg.start()
-            with MyTimer("LogisticRegression获取任务列表"):
-                sparkappdict = self.spark.getAppDict()
-            with MyTimer("LogisticRegression更新应用信息"):
-                i = 0
-                while ((not sparkappdict) or (len(sparkappdict) != self.sparkcount)):
-                    i += 1
-                    sparkappdict = self.spark.getAppDict()
-                    logger.info("第{}次LogisticRegression信息拉取：{}".format(i, sparkappdict))
-                    time.sleep(1)
-            print("----------------------------------------", file=f)
-            print(self.sparkcount, file=f)
-            print(sparkappdict, file=f)
-            print("-----------------------------------------", file=f)
-            info = sparkappdict - (sparkappdict & self.appbak)
-            self.activeJobInfo[order] = list(info)[0]
-            self.appbak = self.appbak.union(info)
+            lgrecord = Thread(target=self.record, args=(be, self.spark, order))
+            lgrecord.start()
             return "Start LogisticRegression"
         elif be == "Hpcc":
             self.scicount += 1
             self.launchOrder[order] = "hpcc"
             hpcc = Thread(target=self.launchHpcc)
             hpcc.start()
-            time.sleep(timeout)
-            with MyTimer("Hpcc更新应用信息"):
-                sciappdict = self.sci.getAppDict()
-                while ((not sciappdict) or (len(sciappdict) != self.scicount)):
-                    sciappdict = self.sci.getAppDict()
-                    time.sleep(1)
-            print("----------------------------------------", file=f)
-            print(self.scicount, file=f)
-            print(sciappdict, file=f)
-            print("-----------------------------------------", file=f)
-            with MyTimer("Hpcc序号应用信息相匹配"):
-                info = sciappdict - (sciappdict & self.appbak)
-                self.activeJobInfo[order] = list(info)[0]
-                self.appbak = self.appbak.union(info)
+            hpccrecord = Thread(target=self.record, args=(be, self.sci, order))
+            hpccrecord.start()
             return "Start Hpcc"
         f.close()
 
