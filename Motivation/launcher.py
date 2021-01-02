@@ -75,10 +75,10 @@ class launcher(object):
             app_nums = self.sparkcount
             logger.info("App_num {} self.count {}".format(app_nums, self.sparkcount))
         elif be == "Hpcc":
-            logger.info("recode函数中self.scicount 的内存地址{}".format(id(self.scicount)))
+            print("recode函数中self.scicount 的内存地址{}".format(id(self.scicount)))
             app_nums = self.scicount
-            logger.info("recode函数中appnum 的内存地址{}".format(id(self.scicount)))
-            logger.info("App_num {} self.count {}".format(app_nums, self.scicount))
+            print("recode函数中appnum 的内存地址{}".format(id(self.scicount)))
+            print("App_num {} self.count {}".format(app_nums, self.scicount))
         print("be = {}".format(be))
         with MyTimer("获取{}任务列表".format(be)):
             appdict = job.getAppDict()
