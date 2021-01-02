@@ -68,19 +68,19 @@ class launcher(object):
     def record(self, be, job, order):
         timeout = 1
         f = open(self.logpath, 'a+')
+        print("be = {} scicount= {}".format(be, self.scicount))
         if be == "AI":
             app_nums = self.cnncount
             logger.info("App_num {} self.cnncount {}".format(app_nums, self.cnncount))
-        if be == "KMeans" or "LogisticRegression":
+        elif be == "KMeans" or "LogisticRegression":
             app_nums = self.sparkcount
             logger.info("App_num {} self.count {}".format(app_nums, self.sparkcount))
-        if be == "Hpcc":
+        elif be == "Hpcc":
             print("11111111111111")
             print("recode函数中self.scicount 的内存地址{}".format(id(self.scicount)))
             app_nums = self.scicount
             print("recode函数中appnum 的内存地址{}".format(id(self.scicount)))
             print("App_num {} self.count {}".format(app_nums, self.scicount))
-        print("be = {} scicount= {}".format(be, self.scicount))
         with MyTimer("获取{}任务列表".format(be)):
             appdict = job.getAppDict()
             logger.info("第0次{}信息拉取：{}".format(be, appdict))
