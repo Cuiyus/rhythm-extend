@@ -73,15 +73,11 @@ class launcher(object):
             app_nums = self.cnncount
             logger.info("App_num {} self.cnncount {}".format(app_nums, self.cnncount))
         elif (be == "KMeans") or (be == "LogisticRegression"):
-            print(222222222222)
             app_nums = self.sparkcount
             logger.info("App_num {} self.count {}".format(app_nums, self.sparkcount))
         elif be == "Hpcc":
-            print("11111111111111")
-            print("recode函数中self.scicount 的内存地址{}".format(id(self.scicount)))
             app_nums = self.scicount
-            print("recode函数中appnum 的内存地址{}".format(id(self.scicount)))
-            print("App_num {} self.count {}".format(app_nums, self.scicount))
+            logger.info("App_num {} self.count {}".format(app_nums, self.scicount))
         with MyTimer("获取{}任务列表".format(be)):
             appdict = job.getAppDict()
             logger.info("第0次{}信息拉取：{}".format(be, appdict))
@@ -90,8 +86,6 @@ class launcher(object):
             while ((not appdict) or (len(appdict) != app_nums)):
                 i += 1
                 appdict = job.getAppDict()
-                logger.info("App_Nums:数量{} ".format(app_nums))
-                logger.info("第{}次{}信息拉取：{}".format(i, type, appdict))
                 time.sleep(timeout)
         print("----------------------------------------", file=f)
         print(app_nums, file=f)
@@ -135,8 +129,6 @@ class launcher(object):
             return "Start LogisticRegression"
         elif be == "Hpcc":
             self.scicount += 1
-            logger.info("第一次修改后Hpcc应用数量变化：{}".format(self.scicount))
-            logger.info("self.scicount 的内存地址{}".format(id(self.scicount)))
             self.launchOrder[order] = "hpcc"
             hpcc = Thread(target=self.launchHpcc)
             hpcc.start()
