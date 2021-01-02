@@ -75,6 +75,7 @@ class launcher(object):
             app_nums = self.sparkcount
             logger.info("App_num {} self.count {}".format(app_nums, self.sparkcount))
         elif be == "Hpcc":
+            print("11111111111111")
             print("recode函数中self.scicount 的内存地址{}".format(id(self.scicount)))
             app_nums = self.scicount
             print("recode函数中appnum 的内存地址{}".format(id(self.scicount)))
