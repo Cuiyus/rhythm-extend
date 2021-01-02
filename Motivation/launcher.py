@@ -68,7 +68,6 @@ class launcher(object):
     def record(self, be, job, order):
         timeout = 1
         f = open(self.logpath, 'a+')
-        print("be = {} scicount= {}".format(be, self.scicount))
         if be == "AI":
             app_nums = self.cnncount
             logger.info("App_num {} self.cnncount {}".format(app_nums, self.cnncount))
@@ -88,9 +87,8 @@ class launcher(object):
                 appdict = job.getAppDict()
                 time.sleep(timeout)
         print("----------------------------------------", file=f)
-        print(app_nums, file=f)
-        print(appdict, file=f)
-        print("-----------------------------------------", file=f)
+        print("已启动任务的数量：{}".format(app_nums), file=f)
+        print("已启动任务的列表：{}".format(app_nums), file=f)
         with MyTimer("cnn序号应用信息相匹配"):
             info = appdict - (appdict & self.appbak)
             self.activeJobInfo[order] = list(info)[0]
@@ -100,7 +98,7 @@ class launcher(object):
     def launchBE(self, be, order):
         with open(self.logpath, "a+") as f:
             print('----' * 10, file=f)
-            print("Curren Launch {}th job {}\n".format(order, be), file=f)
+            print("Curren Launch {}th job {}".format(order, be), file=f)
         f = open(self.logpath, 'a+')
         if be == "AI":
             self.cnncount += 1
