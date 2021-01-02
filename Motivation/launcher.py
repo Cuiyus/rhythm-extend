@@ -75,7 +75,9 @@ class launcher(object):
             app_nums = self.sparkcount
             logger.info("App_num {} self.count {}".format(app_nums, self.sparkcount))
         elif be == "Hpcc":
+            logger.info("recode函数中self.scicount 的内存地址{}".format(id(self.scicount)))
             app_nums = self.scicount
+            logger.info("recode函数中appnum 的内存地址{}".format(id(self.scicount)))
             logger.info("App_num {} self.count {}".format(app_nums, self.scicount))
 
         with MyTimer("获取{}任务列表".format(be)):
@@ -132,6 +134,7 @@ class launcher(object):
         elif be == "Hpcc":
             self.scicount += 1
             logger.info("第一次修改后Hpcc应用数量变化：{}".format(self.scicount))
+            logger.info("self.scicount 的内存地址{}".format(id(self.scicount)))
             self.launchOrder[order] = "hpcc"
             hpcc = Thread(target=self.launchHpcc)
             hpcc.start()
