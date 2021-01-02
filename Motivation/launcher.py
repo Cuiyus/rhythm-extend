@@ -72,7 +72,7 @@ class launcher(object):
         if be == "AI":
             app_nums = self.cnncount
             logger.info("App_num {} self.cnncount {}".format(app_nums, self.cnncount))
-        elif be == "KMeans" or "LogisticRegression":
+        elif (be == "KMeans") or (be == "LogisticRegression"):
             print(222222222222)
             app_nums = self.sparkcount
             logger.info("App_num {} self.count {}".format(app_nums, self.sparkcount))
