@@ -131,6 +131,7 @@ class launcher(object):
             return "Start LogisticRegression"
         elif be == "Hpcc":
             self.scicount += 1
+            logger.info("第一次修改后Hpcc应用数量变化：{}".format(self.scicount))
             self.launchOrder[order] = "hpcc"
             hpcc = Thread(target=self.launchHpcc)
             hpcc.start()
