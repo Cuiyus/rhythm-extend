@@ -73,6 +73,7 @@ class launcher(object):
             app_nums = self.cnncount
             logger.info("App_num {} self.cnncount {}".format(app_nums, self.cnncount))
         elif be == "KMeans" or "LogisticRegression":
+            print(222222222222)
             app_nums = self.sparkcount
             logger.info("App_num {} self.count {}".format(app_nums, self.sparkcount))
         elif be == "Hpcc":
