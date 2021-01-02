@@ -80,7 +80,7 @@ class launcher(object):
             app_nums = self.scicount
             print("recode函数中appnum 的内存地址{}".format(id(self.scicount)))
             print("App_num {} self.count {}".format(app_nums, self.scicount))
-        print("be = {}".format(be))
+        print("be = {} scicount= {}".format(be, self.scicount))
         with MyTimer("获取{}任务列表".format(be)):
             appdict = job.getAppDict()
             logger.info("第0次{}信息拉取：{}".format(be, appdict))
