@@ -236,13 +236,13 @@ def getJobNum():
     return jsonify(info)
 @app.route("/getAINum", methods=["GET",])
 def getAINum():
-    return l.cnncount
+    return str(l.cnncount)
 @app.route("/getSparkNum", methods=["GET",])
 def getSparkNum():
-    return l.sparkcount
+    return str(l.sparkcount)
 @app.route("/getSciNum", methods=["GET",])
 def getSciNum():
-    return l.scicount
+    return str(l.scicount)
 
 # Get ActiveJob
 @app.route('/getSparkJob',methods=["GET"])
