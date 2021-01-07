@@ -71,11 +71,11 @@ class cnnProgress(object):
         self.appProgress.append([app[0], progress, "AI"])
 
 
-    def Priority(self):
+    def getPriority(self):
         self.recordAppDict()
         self.appProgress = []
         progress_thread = []
-        for app in list(self.appDict):
+        for app in list(self.getAppDict()):
             t = threading.Thread(target=self.getProgress, args=(app,))
             t.start()
             progress_thread.append(t)

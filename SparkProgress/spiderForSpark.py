@@ -122,7 +122,7 @@ class sparkProgress(object):
     def getPriority(self):
         progress_thread = []
         self.appProgress = []
-        for app in list(self.appDict):
+        for app in list(self.getAppDict()):
             t = threading.Thread(target=self.getProgress, args=(app,))
             t.start()
             progress_thread.append(t)
