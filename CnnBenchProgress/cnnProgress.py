@@ -88,7 +88,7 @@ class cnnProgress(object):
 
     def run(self):
         updateappDict = threading.Thread(target=self.recordAppDict)
-        pri = threading.Thread(target=self.Priority)
+        pri = threading.Thread(target=self.getPriority)
         updateappDict.start()
         pri.start()
 
