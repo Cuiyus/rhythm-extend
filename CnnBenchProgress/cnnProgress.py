@@ -126,8 +126,6 @@ def stepPredict(func, data_path, loss):
     return totalStep, x[-1], progress
 
 
-
-
 from flask import Flask, jsonify
 app = Flask(__name__)
 @app.route("/getPriority", methods=["GET"])
