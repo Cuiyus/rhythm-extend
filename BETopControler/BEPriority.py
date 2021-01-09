@@ -245,18 +245,29 @@ def getSparkNum():
     return str(l.sparkcount)
 @app.route("/getSciNum", methods=["GET",])
 def getSciNum():
+    # sciDict = {}
+    # for i, app in enumerate(list(sci.getAppDict())): sciDict[i] = app
+    # return jsonify(sciDict)
     return str(l.scicount)
 
 # Get ActiveJob
 @app.route('/getSparkJob',methods=["GET"])
 def getSparkJob():
     sparkDict = {}
-    for i, app in enumerate(spark.appDict):sparkDict[i] = app
+    for i, app in enumerate(list(spark.getAppDict())):sparkDict[i] = app
     return jsonify(sparkDict)
 
 @app.route('/getAIJob',methods=["GET"])
 def getAIJob():
-    return jsonify(cnn.appDict)
+    cnnDict = {}
+    for i, app in enumerate(list(cnn.getAppDict())): cnnDict[i] = app
+    return jsonify(cnnDict)
+
+@app.route('/getSciJob',methods=["GET"])
+def getSciJob():
+    sciDict = {}
+    for i, app in enumerate(list(sci.getAppDict())): sciDict[i] = app
+    return jsonify(sciDict)
 
 @app.route('/getActiveJob', methods=["GET"])
 def getActiveJob():
