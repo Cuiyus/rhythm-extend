@@ -126,12 +126,13 @@ class sparkProgress(object):
         self.appProgress = []
         applist = list(self.getAppDict())
         logger.info("此时Spark应用有：{}".format(applist))
-        for app in applist:
-            t = threading.Thread(target=self.getProgress, args=(app,))
-            t.start()
-            progress_thread.append(t)
-        for t in progress_thread:
-            t.join()
+        if applist:
+            for app in applist:
+                t = threading.Thread(target=self.getProgress, args=(app,))
+                t.start()
+                progress_thread.append(t)
+            for t in progress_thread:
+                t.join()
         self.reflashPriority()
         self.priority.sort(key=lambda x: x[1], reverse=False)
         logger.info("返回spark任务的优先级：{}".format(self.priority))
