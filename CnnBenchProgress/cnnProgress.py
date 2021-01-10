@@ -75,12 +75,14 @@ class cnnProgress(object):
         self.recordAppDict()
         self.appProgress = []
         progress_thread = []
-        for app in list(self.getAppDict()):
-            t = threading.Thread(target=self.getProgress, args=(app,))
-            t.start()
-            progress_thread.append(t)
-        for p in progress_thread:
-            p.join()
+        applist = list(self.getAppDict())
+        if applist:
+            for app in list(self.getAppDict()):
+                t = threading.Thread(target=self.getProgress, args=(app,))
+                t.start()
+                progress_thread.append(t)
+            for p in progress_thread:
+                p.join()
         self.refreshPriority()
         self.priority.sort(key=lambda x: x[1], reverse=False)
         return self.priority
