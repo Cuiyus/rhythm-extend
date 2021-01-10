@@ -134,6 +134,7 @@ class sparkProgress(object):
             t.join()
         self.reflashPriority()
         self.priority.sort(key=lambda x: x[1], reverse=False)
+        logger.info("返回spark任务的优先级：{}".format(self.priority))
         return self.priority
 
     # getStageID，getRunningTask，getCoarseGrainedExecutorPort 都是针对单个spark application的类方法
