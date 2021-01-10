@@ -30,9 +30,10 @@ class MyTimer(object):
     '''
     用上下文管理器计时
     '''
-    def __init__(self, testcode):
+    def __init__(self, testcode, loger=None):
         self.testcode = testcode
         self.cfg = readConfig()
+        self.loger = loger
 
     def __enter__(self):
         self.t0 = time.time()
@@ -40,4 +41,6 @@ class MyTimer(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         path = self.cfg.get("Experiment", "perf")
         with open(path, "a+") as f:
+            info = '[finished, {} spent time: {time:.2f}s]'.format(self.testcode, time = time.time() - self.t0)
+            if self.loger: self.loger.INFO(info)
             print('[finished, {} spent time: {time:.2f}s]'.format(self.testcode, time = time.time() - self.t0), file=f)

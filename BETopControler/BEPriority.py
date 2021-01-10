@@ -1,6 +1,7 @@
 # coding=utf-8
 import time
 import sys, subprocess, random, logging, Pyro4
+from Preftest.perftime import MyTimer
 logging.basicConfig(level = logging.INFO, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -157,11 +158,12 @@ def getHpccPriority(hpcc):
 
 def getAllPriority(sci, spark, cnn):
     predict_appinfo = {}
-    unpredict_appinfo, unpredict_priority = getHpccPriority(sci)
+    with MyTimer("挑选不可预测任务", logger):
+        unpredict_appinfo, unpredict_priority = getHpccPriority(sci)
     # 获取存储有AI与spark不可预测任务信息的队列
-    predict_priority = spark.getPriority() + cnn.getPriority()
+    with MyTimer("挑选不可预测任务", logger):
+        predict_priority = spark.getPriority() + cnn.getPriority()
     predict_priority.sort(key=lambda x: x[1], reverse=False)
-
     for i, d in enumerate(predict_priority):
         predict_appinfo[i] = d
     pick_job = pickJob(unpredict_priority, predict_priority)
@@ -281,8 +283,8 @@ from BETopControler.controlkiller import SparkKiller, AiKiller, HpcKiller
 
 @app.route("/runkill",methods=["GET"])
 def runkill():
-    logger.info("")
-    killjob = getAllPriority(sci, spark, cnn)
+    with MyTimer("从三类任务中挑选任务", logger):
+        killjob = getAllPriority(sci, spark, cnn)
     if not killjob: return "没有正在运行的BE"
     if killjob[2] == "spark":
         worker = request.args.get("worker")
