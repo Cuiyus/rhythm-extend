@@ -332,6 +332,6 @@ if __name__ == '__main__':
     # rmi.start()
     # print("rmi服务启动")
 
-    Monitorinit()
+    # Monitorinit()
     print("Flask启动")
     app.run(host="0.0.0.0", port=10089)
