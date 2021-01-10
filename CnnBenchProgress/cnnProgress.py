@@ -128,7 +128,7 @@ def stepPredict(func, data_path, loss):
     popt, pcov = curve_fit(func, x[:], y[:], bounds=(0, [3., 1., 0.19]))
     # popt, pcov = curve_fit(func, x[1000], y, bounds=(0, [3., 1., 0.19]))
     a, b, c = popt[0], popt[1], popt[2]
-    totalStep =  1/((loss - c) * a) - (b/a)
+    totalStep = 1/((loss - c) * a) - (b/a)
     progress = x[-1] / totalStep
     return totalStep, x[-1], progress
 
