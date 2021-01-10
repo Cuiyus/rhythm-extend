@@ -4,8 +4,10 @@ import subprocess
 from multiprocessing import Pool, process
 import threading, configparser
 from bs4 import BeautifulSoup
-from copy import deepcopy
-
+# from copy import deepcopy
+import logging
+logging.basicConfig(level = logging.INFO, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 '''
 刻画不同spark的工作进度
 已实现功能：
@@ -122,7 +124,9 @@ class sparkProgress(object):
     def getPriority(self):
         progress_thread = []
         self.appProgress = []
-        for app in list(self.getAppDict()):
+        applist = list(self.getAppDict())
+        logger.info("此时Spark应用有：{}".format(applist))
+        for app in applist:
             t = threading.Thread(target=self.getProgress, args=(app,))
             t.start()
             progress_thread.append(t)
