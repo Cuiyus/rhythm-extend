@@ -42,5 +42,5 @@ class MyTimer(object):
         path = self.cfg.get("Experiment", "perf")
         with open(path, "a+") as f:
             info = '[finished, {} spent time: {time:.2f}s]'.format(self.testcode, time = time.time() - self.t0)
-            if self.loger: self.loger.INFO(info)
+            if self.loger: self.loger.info(info)
             print('[finished, {} spent time: {time:.2f}s]'.format(self.testcode, time = time.time() - self.t0), file=f)
