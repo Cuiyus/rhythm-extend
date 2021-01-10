@@ -37,7 +37,7 @@ class sparkProgress(object):
         return self.getAppID_Port()
 
     def getExecutor(self):
-        return self.app_Executor
+        return self.getAllExecutor()
 
 
     def reflashAppDict(self, data):
@@ -229,21 +229,21 @@ class sparkProgress(object):
             self.lock.release()
 
     def getAllExecutor(self):
-        while True:
             # 有问题
-            self.app_Executor_temp = {}
-            progress_thread = []
-            for app in list(self.appDict):
-                t = threading.Thread(target=self.getAppCoarseGrainedExecutorPort, args=(app,))
-                t.start()
-                progress_thread.append(t)
-            for t in progress_thread:
-                t.join()
-            self.reflashAppExecutor()
+        self.app_Executor_temp = {}
+        progress_thread = []
+        for app in list(self.appDict):
+            t = threading.Thread(target=self.getAppCoarseGrainedExecutorPort, args=(app,))
+            t.start()
+            progress_thread.append(t)
+        for t in progress_thread:
+            t.join()
+        self.reflashAppExecutor()
+        return self.app_Executor
 
-    def run(self):
-        updateappExecutor = threading.Thread(target=self.getAllExecutor)
-        updateappExecutor.start()
+    # def run(self):
+    #     updateappExecutor = threading.Thread(target=self.getAllExecutor)
+    #     updateappExecutor.start()
 
 
 
