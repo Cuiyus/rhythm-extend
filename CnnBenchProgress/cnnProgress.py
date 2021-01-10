@@ -12,6 +12,9 @@ import subprocess, threading
 2. 目前只能获取同步任务，缺乏对异步任务，非分布式任务的监控
 '''
 import Pyro4
+import logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 @Pyro4.expose
 class cnnProgress(object):
     def __init__(self):
@@ -76,6 +79,7 @@ class cnnProgress(object):
         self.appProgress = []
         progress_thread = []
         applist = list(self.getAppDict())
+        logger.info("此时Cnn应用有：{}".format(applist))
         if applist:
             for app in list(self.getAppDict()):
                 t = threading.Thread(target=self.getProgress, args=(app,))
@@ -84,6 +88,7 @@ class cnnProgress(object):
             for p in progress_thread:
                 p.join()
         self.refreshPriority()
+        logger.info("返回Cnn任务的优先级：{}".format(self.priority))
         self.priority.sort(key=lambda x: x[1], reverse=False)
         return self.priority
 
