@@ -1,10 +1,10 @@
 import time, subprocess
 import threading, re
-# import mysql.connector
-# from initDB import initDB
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
-
+import logging
+logging.basicConfig(level = logging.INFO, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 # Scimark启动样例
 # 需要为Scimark启动容器
@@ -84,6 +84,8 @@ class scimarkProgress(object):
 
     def monitorAppIsAlive(self):
         while True:
+            time.sleep(1)
+            logger.info("SciAppDict:{}".format(self.appDict))
             for app in list(self.appDict):
                 if not self.appisAlive(app[0]):
                     self.lock.acquire()

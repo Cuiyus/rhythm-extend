@@ -1,6 +1,6 @@
 # coding=utf-8
 import time
-import sys, subprocess, random, logging
+import sys, Pyro4, random, logging
 sys.path.append(r"/home/tank/cys/rhythm/BE/rhythm-extend")
 from Preftest.perftime import MyTimer
 logging.basicConfig(level = logging.INFO, format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
