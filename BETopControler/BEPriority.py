@@ -199,16 +199,16 @@ def pickRandom(sci, spark, cnn):
 import threading
 def Monitorinit():
     threads = []
-    sparkmonitor_thread = threading.Thread(target=startSparkMonitor, args=(spark,))
-    sparkmonitor_thread.start()
-    aimonitor_thread = threading.Thread(target=startAIMonitor,args=(cnn,))
-    aimonitor_thread.start()
+    # sparkmonitor_thread = threading.Thread(target=startSparkMonitor, args=(spark,))
+    # sparkmonitor_thread.start()
+    # aimonitor_thread = threading.Thread(target=startAIMonitor,args=(cnn,))
+    # aimonitor_thread.start()
     hpcmonitor_thread = threading.Thread(target=startHPCMonitor, args=(sci,))
     hpcmonitor_thread.start()
-
-    threads.extend([sparkmonitor_thread, aimonitor_thread, hpcmonitor_thread])
-    for t in threads:
-        t.join()
+    hpcmonitor_thread.join()
+    # threads.extend([sparkmonitor_thread, aimonitor_thread, hpcmonitor_thread])
+    # for t in threads:
+    #     t.join()
 
 
 from flask import Flask, jsonify, request
@@ -332,6 +332,6 @@ if __name__ == '__main__':
     # rmi.start()
     # print("rmi服务启动")
 
-    # Monitorinit()
+    Monitorinit()
     print("Flask启动")
     app.run(host="0.0.0.0", port=10089)

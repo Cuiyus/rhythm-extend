@@ -85,7 +85,6 @@ class scimarkProgress(object):
     def monitorAppIsAlive(self):
         while True:
             time.sleep(1)
-            logger.info("SciAppDict:{}".format(self.appDict))
             for app in list(self.appDict):
                 if not self.appisAlive(app[0]):
                     self.lock.acquire()
